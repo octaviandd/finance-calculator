@@ -5,11 +5,11 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { action as editAction } from "./routes/edit";
+import "@fontsource/public-sans";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./routes/error";
-import Spreadsheet, { loader as contactLoader } from "./routes/spreadsheet";
+import Spreadsheet from "./routes/spreadsheet";
 import Spreadsheets from "./routes/spreadsheets";
 import EditContact from "./routes/edit";
 import LoginPage from "./routes/login";
@@ -17,29 +17,25 @@ import RegisterPage from "./routes/register";
 import Dashboard from "./routes/dashboard";
 import Root from "./routes/root";
 import SpreadsheetEdit from "./routes/spreadsheet-edit";
+import Profile from "./utils/Profile";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Dashboard />,
+    element: <App />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/spreadsheets/",
-        element: <Spreadsheets />,
-        loader: contactLoader,
+        path: "/dashboard/",
+        element: <Profile />,
       },
       {
         path: "spreadsheets/:spreadsheetId",
         element: <Spreadsheet />,
-        loader: contactLoader,
-        action: editAction,
       },
       {
         path: "spreadsheets/:spreadsheetId/edit",
         element: <SpreadsheetEdit />,
-        loader: contactLoader,
-        action: editAction,
       },
     ],
   },
