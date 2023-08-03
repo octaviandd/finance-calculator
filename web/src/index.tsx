@@ -6,18 +6,13 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "@fontsource/public-sans";
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./routes/error";
-import Spreadsheet from "./routes/spreadsheet";
-import Spreadsheets from "./routes/spreadsheets";
-import EditContact from "./routes/edit";
+import Period from "./routes/period";
 import LoginPage from "./routes/login";
 import RegisterPage from "./routes/register";
-import Dashboard from "./routes/dashboard";
-import Root from "./routes/root";
-import SpreadsheetEdit from "./routes/spreadsheet-edit";
-import Profile from "./utils/Profile";
+import PeriodEdit from "./routes/period-edit";
+import Profile from "./components/Profile";
 
 const router = createBrowserRouter([
   {
@@ -26,16 +21,16 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/dashboard/",
+        path: "/profile/",
         element: <Profile />,
       },
       {
-        path: "spreadsheets/:spreadsheetId",
-        element: <Spreadsheet />,
+        path: "periods/:periodId",
+        element: <Period />,
       },
       {
-        path: "spreadsheets/:spreadsheetId/edit",
-        element: <SpreadsheetEdit />,
+        path: "periods/:periodId/edit",
+        element: <PeriodEdit />,
       },
     ],
   },

@@ -1,8 +1,4 @@
-/**
- * eslint-disable jsx-a11y/anchor-is-valid
- *
- * @format
- */
+/** @format */
 
 import * as React from "react";
 import { styled } from "@mui/joy/styles";
@@ -11,7 +7,6 @@ import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
 import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
-import Input from "@mui/joy/Input";
 import List from "@mui/joy/List";
 import ListItem from "@mui/joy/ListItem";
 import ListItemButton from "@mui/joy/ListItemButton";
@@ -19,16 +14,9 @@ import ListItemContent from "@mui/joy/ListItemContent";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
-import ColorSchemeToggle from "./ColorSchemeToggle";
-import { closeSidebar } from "./utils";
-import {
-  LogOut,
-  Coffee,
-  Home,
-  BarChart2,
-  Filter,
-  ArrowDown,
-} from "react-feather";
+import ColorSchemeToggle from "../utils/ColorSchemeToggle";
+import { closeSidebar } from "../utils/utils";
+import { LogOut, Coffee, Home, BarChart2, Filter } from "react-feather";
 import { Link } from "react-router-dom";
 
 const Dropdown = styled("i")(({ theme }) => ({
@@ -131,7 +119,7 @@ export default function Sidebar() {
                 <BarChart2 />
               </ListItemDecorator>
               <ListItemContent>
-                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/profile">Profile</Link>
               </ListItemContent>
               <Dropdown data-feather="chevron-down" />
             </ListItemButton>

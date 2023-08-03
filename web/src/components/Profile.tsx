@@ -1,28 +1,27 @@
 /** @format */
 
-import * as React from "react";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
 import Chip, { chipClasses } from "@mui/joy/Chip";
-import Divider from "@mui/joy/Divider";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
-import FormHelperText from "@mui/joy/FormHelperText";
-import Input from "@mui/joy/Input";
-import Textarea from "@mui/joy/Textarea";
-import Stack from "@mui/joy/Stack";
 import Sheet from "@mui/joy/Sheet";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
 import Typography from "@mui/joy/Typography";
 import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
-import SpreadSheets from "../routes/spreadsheets";
-import { TabPanel } from "@mui/joy";
+import Periods from "../routes/periods";
+import { Button, TabPanel } from "@mui/joy";
+import { useState, useEffect } from "react";
 
 export default function MyProfile() {
+  const [timelines, setTimelines] = useState([
+    {
+      id: 1,
+      value: "2023",
+    },
+  ]);
+
+  useEffect(() => {}, []);
+
   return (
     <Sheet
       sx={{
@@ -33,9 +32,12 @@ export default function MyProfile() {
         mx: "auto",
       }}
     >
-      <Typography level="h1" fontSize="xl2" sx={{ mb: 1 }}>
-        My Spreadsheets
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography level="h1" fontSize="xl2" sx={{ mb: 1 }}>
+          Timelines
+        </Typography>
+        <Button>Add new timeline</Button>
+      </Box>
       <Tabs
         defaultValue={1}
         sx={{
@@ -126,20 +128,17 @@ export default function MyProfile() {
             },
           })}
         >
-          <Tab value={0}>2022</Tab>
-          <Tab value={1}>2023</Tab>
-          <Tab value={2}>2024</Tab>
-          <Tab value={3}>2025</Tab>
+          {timelines.map((timeline) => (
+            <Tab value={timeline.id} key={timeline.id}>
+              {timeline.value}
+            </Tab>
+          ))}
         </TabList>
-        <TabPanel value={0} sx={{ p: 2 }}>
-          <b>First</b> tab panel
-        </TabPanel>
-        <TabPanel value={1} sx={{ p: 2 }}>
-          <SpreadSheets></SpreadSheets>
-        </TabPanel>
-        <TabPanel value={2} sx={{ p: 2 }}>
-          <b>Third</b> tab panel
-        </TabPanel>
+        {timelines.map((timeline) => (
+          <TabPanel value={timeline.id} sx={{ p: 2 }} key={timeline.id}>
+            <Periods></Periods>
+          </TabPanel>
+        ))}
       </Tabs>
     </Sheet>
   );

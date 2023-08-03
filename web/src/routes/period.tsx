@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Form, Link, useLoaderData, useParams } from "react-router-dom";
-import { ContactInterface } from "../types/Contacts";
 import axios, { AxiosError } from "axios";
 import { getCookie } from "../utils/cookie";
 import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
 import { Plus } from "react-feather";
-import ReportTable from "../utils/ReportTable";
+import ReportTable from "../components/ReportTable";
 
-interface SpreadSheet {
+interface Period {
   title: string;
   expenses: [{ id: 0; title: string; amount: number; planned_amount: number }];
   incomes: [{ id: 0; title: string; amount: number; planned_amount: number }];
@@ -20,12 +19,12 @@ interface SpreadSheet {
   start_balance: number;
 }
 
-export default function Spreadsheets() {
+export default function Periods() {
   const [error, setError] = useState(false);
   const [toastState, setToastState] = useState(true);
   const [isModalOpen, setModalState] = useState(false);
-  const { spreadsheetId } = useParams();
-  const [spreadSheet, setSpreadSheet] = useState<SpreadSheet>({
+  const { periodId } = useParams();
+  const [spreadSheet, setSpreadSheet] = useState<Period>({
     title: "",
     expenses: [{ id: 0, title: "", amount: 0, planned_amount: 0 }],
     incomes: [{ id: 0, title: "", amount: 0, planned_amount: 0 }],
@@ -40,7 +39,7 @@ export default function Spreadsheets() {
     const token = getCookie("token");
     try {
       await axios
-        .get(`http://127.0.0.1:8000/finance/spreadsheets/${spreadsheetId}`, {
+        .get(`http://127.0.0.1:8000/finance/period/${periodId}`, {
           headers: { Authorization: `Token ${token}` },
         })
         .then((res) => {
@@ -87,7 +86,7 @@ export default function Spreadsheets() {
         <Typography level="h1" fontSize="xl3" sx={{ mb: 1 }}>
           {spreadSheet.title}'s report
         </Typography>
-        <Link to={`/spreadsheets/${spreadsheetId}/edit`}>
+        <Link to={`/period/${periodId}/edit`}>
           <Button variant="solid">
             <Typography fontSize="md" sx={{ mx: 1, color: "white" }}>
               Add Transactions

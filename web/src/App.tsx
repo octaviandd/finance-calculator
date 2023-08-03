@@ -1,17 +1,15 @@
 /** @format */
 
-import * as React from "react";
 import { CssVarsProvider } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
 import customTheme from "./theme";
-import Sidebar from "./utils/Sidebar";
-import Header from "./utils/Header";
-import Profile from "./utils/Profile";
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
 import { Outlet } from "react-router-dom";
 
-export default function JoyOrderDashboardTemplate() {
+export default function App() {
   return (
     <CssVarsProvider disableTransitionOnChange theme={customTheme}>
       <GlobalStyles

@@ -7,14 +7,11 @@ import Typography from "@mui/joy/Typography";
 import { Link } from "react-router-dom";
 import { Maximize } from "react-feather";
 import { Box } from "@mui/joy";
+import { MonthlyPeriod } from "../types/MonthlyPeriod";
 
-export default function BasicCard({
-  period,
-}: {
-  period: { title: string; id: number };
-}) {
+export default function BasicCard({ period }: { period: MonthlyPeriod }) {
   return (
-    <Card variant="outlined" sx={{ width: 420 }}>
+    <Card variant="outlined" sx={{ width: 370 }}>
       <div>
         <Typography level="h2" fontSize="md" sx={{ mb: 0.5 }}>
           {period.title}
@@ -41,7 +38,7 @@ export default function BasicCard({
             marginLeft: "auto",
           }}
         >
-          <Link to={`/spreadsheets/${period.id}`}>
+          <Link to={`/periods/${period.id}`}>
             <Button
               variant="solid"
               size="sm"

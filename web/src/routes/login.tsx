@@ -69,7 +69,7 @@ export default function LoginPage({}: Props) {
         .post("http://127.0.0.1:8000/finance/login", formJson)
         .then((response) => {
           document.cookie = `token=${response.data.token}; path=/`;
-          navigate("/spreadsheets");
+          navigate("/profile");
         });
     } catch (error) {
       const err = error as AxiosError;

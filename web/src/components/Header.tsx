@@ -4,8 +4,8 @@ import * as React from "react";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import IconButton from "@mui/joy/IconButton";
 import Sheet from "@mui/joy/Sheet";
-import ColorSchemeToggle from "./ColorSchemeToggle";
-import { toggleSidebar } from "./utils";
+import ColorSchemeToggle from "../utils/ColorSchemeToggle";
+import { toggleSidebar } from "../utils/utils";
 
 export default function Header() {
   return (
