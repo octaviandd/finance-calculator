@@ -124,7 +124,7 @@ def get_monthly_period(request, id):
     serializer = MonthlyPeriodSerializer(yearly_period, many = False)
     return Response(serializer.data, status = 200)
 
-@api_view(['POST'])
+@api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def edit_monthly_period(request, id):
@@ -170,7 +170,7 @@ def create_monthly_period_income(id, request):
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def get_categories():
+def get_categories(request):
     categories = Category.objects.all()
     serializer = CategorySerializer(categories, many = True)
     return Response(serializer.data, status = 200)
