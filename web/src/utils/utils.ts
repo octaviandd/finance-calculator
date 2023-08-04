@@ -96,7 +96,7 @@ export const serverRequest = async (
   url: string,
   data: any | undefined,
   callback: Function,
-  setError: Function
+  setErrors: Function
 ) => {
   try {
     await axios({
@@ -110,7 +110,7 @@ export const serverRequest = async (
   } catch (error) {
     const err = error as AxiosError;
     if (axios.isAxiosError(err)) {
-      setError(true);
+      setErrors(err);
     }
   }
 };

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
+import { serverRequest } from "../utils/utils";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -15,6 +16,20 @@ export default function RegisterPage() {
     email: [],
     password: [],
   });
+
+  const handleErrors = (err: AxiosError) => {
+    let data = err?.response?.data as {
+      username: string[];
+      email: string[];
+      password: [];
+    };
+    setErrors(() => ({
+      username: data.username || [],
+      email: data.email || [],
+      password: data.password || [],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setErrors(() => ({
       username: [],
@@ -27,28 +42,13 @@ export default function RegisterPage() {
     const formData = new FormData(form as HTMLFormElement);
     const formJson = Object.fromEntries(formData.entries());
 
-    try {
-      await axios
-        .post("http://127.0.0.1:8000/finance/register", formJson)
-        .then(() => {
-          navigate("/login");
-        });
-    } catch (error) {
-      const err = error as AxiosError;
-      if (axios.isAxiosError(err)) {
-        let data = err?.response?.data as {
-          username: string[];
-          email: string[];
-          password: [];
-        };
-        setErrors(() => ({
-          username: data.username || [],
-          email: data.email || [],
-          password: data.password || [],
-        }));
-      } else {
-      }
-    }
+    serverRequest(
+      "POST",
+      "finance/register",
+      formJson,
+      () => navigate("/login"),
+      (data: AxiosError) => handleErrors(data)
+    );
   };
 
   return (

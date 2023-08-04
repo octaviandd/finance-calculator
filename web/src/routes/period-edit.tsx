@@ -34,7 +34,7 @@ export default function PeriodEdit() {
   const saveExpense = async (expense: Expense) => {
     serverRequest(
       "post",
-      `finance/period/${periodId}/save-expense`,
+      `finance/monthly-period/${periodId}/save-expense`,
       expense,
       setExpenses,
       setError
@@ -44,7 +44,7 @@ export default function PeriodEdit() {
   const saveIncome = async (income: Income) => {
     serverRequest(
       "post",
-      `finance/period/${periodId}/save-income`,
+      `finance/montly-period/${periodId}/save-income`,
       income,
       setIncomes,
       setError
@@ -54,7 +54,7 @@ export default function PeriodEdit() {
   useEffect(() => {
     serverRequest(
       "get",
-      `finance/period/${periodId}/edit`,
+      `finance/monthly-period/${periodId}/edit`,
       undefined,
       (data: MonthlyPeriod) => {
         setExpenses(data.expenses);

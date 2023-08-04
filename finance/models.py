@@ -13,8 +13,6 @@ class Expense(models.Model):
     categories= models.ManyToManyField(Category, related_name="expenses_set")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
 
 class Income(models.Model):
     title = models.CharField(max_length=50)
@@ -24,16 +22,26 @@ class Income(models.Model):
     categories= models.ManyToManyField(Category, related_name="incomes_set")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-
-class Period(models.Model):
-    title = models.CharField(max_length = 30)
-    total_spend = models.FloatField()
-    total_income = models.FloatField()
-    total_savings = models.FloatField()
-    total_saved_this_period = models.FloatField()
-    start_balance = models.FloatField()
-    end_balance = models.FloatField()
+class MonthlyPeriod(models.Model):
+    title = models.CharField(max_length=30)
+    from_date = models.DateField(null=True)
+    to_date = models.DateField(null=True)
     incomes = models.ManyToManyField(Income, related_name="period_incomes_set")
     expenses = models.ManyToManyField(Expense, related_name="period_expense_set")
+    total_spend = models.FloatField(default=0)
+    total_income = models.FloatField(default=0)
+    total_savings = models.FloatField(default=0)
+    total_saved_this_period = models.FloatField(default=0)
+    start_balance = models.FloatField(default=0)
+    end_balance = models.FloatField(default=0)
+
+
+class YearlyPeriod(models.Model):
+    title = models.CharField(max_length = 30)
+    monthly_periods = models.ManyToManyField(MonthlyPeriod, related_name="period_months_set")
+    
+    
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    periods = models.ManyToManyField(YearlyPeriod, related_name="yearly_periods_set")

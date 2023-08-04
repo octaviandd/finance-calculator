@@ -73,11 +73,9 @@ export default function OrderTable({
   const onSubmit = (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
     const data = new FormData(form.currentTarget);
-    console.log(data.get("title"));
   };
 
   useEffect(() => {
-    console.log(items);
     serverRequest(
       "get",
       `finance/categories`,

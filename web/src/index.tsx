@@ -25,11 +25,11 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "periods/:periodId",
+        path: "monthly-period/:periodId",
         element: <Period />,
       },
       {
-        path: "periods/:periodId/edit",
+        path: "monthly-period/:periodId/edit",
         element: <PeriodEdit />,
       },
     ],

@@ -1,6 +1,5 @@
 /** @format */
 
-import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
 import Chip, { chipClasses } from "@mui/joy/Chip";
 import Sheet from "@mui/joy/Sheet";
@@ -8,19 +7,41 @@ import Typography from "@mui/joy/Typography";
 import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
-import Periods from "../routes/periods";
+import Periods from "./periods";
 import { Button, TabPanel } from "@mui/joy";
 import { useState, useEffect } from "react";
+import { serverRequest } from "../utils/utils";
+import { Period } from "../types/Period";
 
 export default function MyProfile() {
-  const [timelines, setTimelines] = useState([
-    {
-      id: 1,
-      value: "2023",
-    },
-  ]);
+  const [periods, setPeriods] = useState<Period[]>([]);
+  const [errors, setErrors] = useState();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    serverRequest(
+      "GET",
+      `finance/yearly-periods`,
+      undefined,
+      (data: Period[]) => {
+        setPeriods(data);
+      },
+      setErrors
+    );
+  }, []);
+
+  const addNewPeriod = () => {
+    if (periods) {
+      serverRequest(
+        "POST",
+        `finance/yearly-period-create`,
+        { previousYear: periods[periods.length - 1].title },
+        (data: Period) => {
+          setPeriods((prevState) => [...prevState, data]);
+        },
+        setErrors
+      );
+    }
+  };
 
   return (
     <Sheet
@@ -34,9 +55,9 @@ export default function MyProfile() {
     >
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
         <Typography level="h1" fontSize="xl2" sx={{ mb: 1 }}>
-          Timelines
+          Periods
         </Typography>
-        <Button>Add new timeline</Button>
+        <Button onClick={addNewPeriod}>Add a new period</Button>
       </Box>
       <Tabs
         defaultValue={1}
@@ -128,15 +149,15 @@ export default function MyProfile() {
             },
           })}
         >
-          {timelines.map((timeline) => (
-            <Tab value={timeline.id} key={timeline.id}>
-              {timeline.value}
+          {periods?.map((period, index) => (
+            <Tab value={index + 1} key={period.id}>
+              {period.title}
             </Tab>
           ))}
         </TabList>
-        {timelines.map((timeline) => (
-          <TabPanel value={timeline.id} sx={{ p: 2 }} key={timeline.id}>
-            <Periods></Periods>
+        {periods?.map((period, index) => (
+          <TabPanel value={index + 1} sx={{ p: 2 }} key={period.id}>
+            <Periods period={period}></Periods>
           </TabPanel>
         ))}
       </Tabs>

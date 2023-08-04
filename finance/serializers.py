@@ -3,7 +3,7 @@ from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from .models import Period, Expense, Income, Category
+from .models import YearlyPeriod, MonthlyPeriod, Expense, Income, Category
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
     
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model: Category
+        model = Category
         fields = ['id', 'title', 'description']
 
 class IncomeSerializer(serializers.ModelSerializer): 
@@ -57,11 +57,19 @@ class ExpenseSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'planned_amount', 'actual_amount', 'categories', 'created_at', 'updated_at', 'user']
     
 
-class PeriodSerializer(serializers.ModelSerializer): 
+class MonthlyPeriodSerializer(serializers.ModelSerializer): 
     incomes = IncomeSerializer(many=True, read_only=True)
     expenses = ExpenseSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Period
-        fields = ['id', 'title', 'total_spend', 'total_income', 'total_savings', 'total_saved_this_period', 'start_balance', 'end_balance', 'incomes', 'expenses']
+        model = MonthlyPeriod
+        fields = ['id', 'title', 'total_spend', 'total_income', 'total_savings', 'total_saved_this_period', 'start_balance', 'from_date', 'to_date', 'end_balance', 'incomes', 'expenses']
+
+
+class YearlyPeriodSerializer(serializers.ModelSerializer): 
+    monthly_periods = MonthlyPeriodSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = YearlyPeriod
+        fields = ['id', 'title', 'monthly_periods']
 

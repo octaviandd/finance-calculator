@@ -16,7 +16,14 @@ import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import ColorSchemeToggle from "../utils/ColorSchemeToggle";
 import { closeSidebar } from "../utils/utils";
-import { LogOut, Coffee, Home, BarChart2, Filter } from "react-feather";
+import {
+  LogOut,
+  Coffee,
+  Home,
+  BarChart2,
+  Filter,
+  DollarSign,
+} from "react-feather";
 import { Link } from "react-router-dom";
 
 const Dropdown = styled("i")(({ theme }) => ({
@@ -179,6 +186,14 @@ export default function Sidebar() {
             "--List-gap": "8px",
           }}
         >
+          <ListItem>
+            <ListItemButton>
+              <ListItemDecorator>
+                <DollarSign />
+              </ListItemDecorator>
+              <ListItemContent>Change Currency</ListItemContent>
+            </ListItemButton>
+          </ListItem>
           <ListItem>
             <ListItemButton>
               <ListItemDecorator>

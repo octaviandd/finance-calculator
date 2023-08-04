@@ -19,12 +19,12 @@ interface Period {
   start_balance: number;
 }
 
-export default function Periods() {
+export default function Period() {
   const [error, setError] = useState(false);
   const [toastState, setToastState] = useState(true);
   const [isModalOpen, setModalState] = useState(false);
   const { periodId } = useParams();
-  const [spreadSheet, setSpreadSheet] = useState<Period>({
+  const [period, setPeriod] = useState<Period>({
     title: "",
     expenses: [{ id: 0, title: "", amount: 0, planned_amount: 0 }],
     incomes: [{ id: 0, title: "", amount: 0, planned_amount: 0 }],
@@ -39,11 +39,11 @@ export default function Periods() {
     const token = getCookie("token");
     try {
       await axios
-        .get(`http://127.0.0.1:8000/finance/period/${periodId}`, {
+        .get(`http://127.0.0.1:8000/finance/monthly-period/${periodId}`, {
           headers: { Authorization: `Token ${token}` },
         })
         .then((res) => {
-          setSpreadSheet((prevState) => ({
+          setPeriod((prevState) => ({
             ...prevState,
             title: res.data.title,
             expenses: res.data.expenses,
@@ -84,7 +84,7 @@ export default function Periods() {
         }}
       >
         <Typography level="h1" fontSize="xl3" sx={{ mb: 1 }}>
-          {spreadSheet.title}'s report
+          {period.title}'s report
         </Typography>
         <Link to={`/period/${periodId}/edit`}>
           <Button variant="solid">
@@ -110,7 +110,7 @@ export default function Periods() {
             <div className="font-medium">
               <p className="text-xl text-[#334960]">START BALANCE</p>
               <p className="text-right text-[#334960] italic">
-                £{spreadSheet.start_balance}
+                £{period.start_balance}
               </p>
             </div>
           </div>
@@ -119,21 +119,19 @@ export default function Periods() {
             <div className="font-medium">
               <p className="text-xl text-[#F46524]">END BALANCE</p>
               <p className="italic text-[#F46524]">
-                £
-                {spreadSheet.start_balance +
-                  spreadSheet.total_saved_this_period}
+                £{period.start_balance + period.total_saved_this_period}
               </p>
             </div>
           </div>
         </div>
         <div className="py-10 px-20 bg-[#ECEDEF]">
           <div className="border-b border-dashed border-neutral-400 pb-5">
-            <p className="text-3xl text-center">£{spreadSheet.total_savings}</p>
+            <p className="text-3xl text-center">£{period.total_savings}</p>
             <p className="text-center">Increase in total savings</p>
           </div>
           <div className="pt-6">
             <p className="text-3xl text-center">
-              {spreadSheet.total_saved_this_period}
+              {period.total_saved_this_period}
             </p>
             <p className="text-center">Saved this month</p>
           </div>
