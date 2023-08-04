@@ -1,0 +1,36 @@
+# Django-related ignore
+*.pyc
+__pycache__/
+*.sqlite3
+db.sqlite3
+.env
+/media/
+
+# Migration files (optional, depends on team preferences)
+# migrations/
+# */migrations/
+
+# Virtual environment
+venv/
+myenv/
+
+# React-related ignore
+node_modules/
+/build/
+.npm/
+.package-lock.json
+yarn.lock
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE-specific files (you can add or remove depending on the IDE you use)
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
