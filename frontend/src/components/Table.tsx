@@ -1,14 +1,8 @@
-/**
- * eslint-disable jsx-a11y/anchor-is-valid
- *
- * @format
- */
+/** @format */
 
 import React, { useState, useEffect } from "react";
-import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
-import Chip from "@mui/joy/Chip";
 import Divider from "@mui/joy/Divider";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
@@ -29,6 +23,7 @@ import { Category } from "../types/Category";
 import { Expense } from "../types/Expense";
 import { Income } from "../types/Income";
 import { Order } from "../types/Order";
+import { Filters } from "./Filters";
 
 import {
   stableSort,
@@ -53,7 +48,6 @@ export default function OrderTable({
   const [order, setOrder] = useState<Order>("desc");
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [open, setOpen] = useState(false);
-  const [temporaryItem, setTemporaryItem] = useState<Expense | Income>();
   const [errors, setError] = useState(false);
 
   const addRow = () => {
@@ -87,42 +81,6 @@ export default function OrderTable({
     );
   }, [items]);
 
-  const renderFilters = () => (
-    <>
-      <FormControl size="sm" sx={{ display: "flex", alignItems: "center" }}>
-        <FormLabel>Status</FormLabel>
-        <Select
-          placeholder="Filter by status"
-          slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
-        >
-          <Option value="paid">Paid</Option>
-          <Option value="pending">Pending</Option>
-          <Option value="refunded">Refunded</Option>
-          <Option value="cancelled">Cancelled</Option>
-        </Select>
-      </FormControl>
-
-      <FormControl size="sm">
-        <FormLabel>Category</FormLabel>
-        <Select placeholder="All">
-          <Option value="all">All</Option>
-        </Select>
-      </FormControl>
-
-      <FormControl size="sm">
-        <FormLabel>Customer</FormLabel>
-        <Select placeholder="All">
-          <Option value="all">All</Option>
-        </Select>
-      </FormControl>
-      <FormControl size="sm">
-        <FormLabel sx={{ opacity: 0 }}>Customer</FormLabel>
-        <Button variant="plain" sx={{ margin: 0 }}>
-          <PlusCircle onClick={() => addRow()}></PlusCircle>
-        </Button>
-      </FormControl>
-    </>
-  );
   return (
     <>
       <Sheet
@@ -158,7 +116,7 @@ export default function OrderTable({
             </Typography>
             <Divider sx={{ my: 2 }} />
             <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {renderFilters()}
+              <Filters addRow={addRow} />
               <Button color="primary" onClick={() => setOpen(false)}>
                 Submit
               </Button>
@@ -193,7 +151,7 @@ export default function OrderTable({
           />
         </FormControl>
 
-        {renderFilters()}
+        <Filters addRow={addRow} />
       </Box>
       <Sheet
         className="OrderTableContainer"

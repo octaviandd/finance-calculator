@@ -3,7 +3,7 @@
 import axios, { AxiosError } from "axios";
 import React, { useState } from "react";
 import { Link as RLink, useNavigate } from "react-router-dom";
-import { CssVarsProvider, useColorScheme } from "@mui/joy/styles";
+import { CssVarsProvider } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
@@ -11,14 +11,12 @@ import Button from "@mui/joy/Button";
 import Checkbox from "@mui/joy/Checkbox";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel, { formLabelClasses } from "@mui/joy/FormLabel";
-import IconButton, { IconButtonProps } from "@mui/joy/IconButton";
 import ColorSchemeToggle from "../utils/ColorSchemeToggle";
 import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
 import Typography from "@mui/joy/Typography";
 import SvgIcon from "@mui/joy/SvgIcon";
 import customTheme from "../theme";
-// import GoogleIcon from './GoogleIcon';
 
 function GoogleIcon() {
   return (
@@ -44,15 +42,8 @@ function GoogleIcon() {
     </SvgIcon>
   );
 }
-interface FormElements extends HTMLFormControlsCollection {
-  email: HTMLInputElement;
-  password: HTMLInputElement;
-  persistent: HTMLInputElement;
-}
 
-type Props = {};
-
-export default function LoginPage({}: Props) {
+export default function LoginPage() {
   const navigate = useNavigate();
   const [hasError, setError] = useState(false);
 

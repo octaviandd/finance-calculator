@@ -100,9 +100,12 @@ export default function Period() {
         </div>
       </Stack>
 
-      <ReportTable></ReportTable>
-
-      <ReportTable></ReportTable>
+      {period?.expenses && (
+        <ReportTable items={period?.expenses} type="expenses"></ReportTable>
+      )}
+      {period?.incomes && (
+        <ReportTable items={period?.incomes} type="incomes"></ReportTable>
+      )}
     </Sheet>
   );
 }
