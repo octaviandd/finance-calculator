@@ -8,20 +8,18 @@ class Category(models.Model):
 class Expense(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
-    planned_amount = models.FloatField()
+    planned_amount = models.FloatField(null=True)
     actual_amount = models.FloatField()
-    categories= models.ManyToManyField(Category, related_name="expenses_set")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    category = models.ForeignKey(Category, related_name="expenses_set", on_delete=models.CASCADE, null = True)
+    date = models.DateTimeField(null = True)
 
 class Income(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
-    planned_amount = models.FloatField()
+    planned_amount = models.FloatField(null=True)
     actual_amount = models.FloatField()
-    categories= models.ManyToManyField(Category, related_name="incomes_set")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    category = models.ForeignKey(Category, related_name="incomes_set", on_delete=models.CASCADE, null = True)
+    date = models.DateTimeField(null = True)
 
 class MonthlyPeriod(models.Model):
     title = models.CharField(max_length=30)

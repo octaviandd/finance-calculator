@@ -3,21 +3,15 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
-import Divider from "@mui/joy/Divider";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
-import Modal from "@mui/joy/Modal";
-import ModalDialog from "@mui/joy/ModalDialog";
-import ModalClose from "@mui/joy/ModalClose";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import Checkbox from "@mui/joy/Checkbox";
 import IconButton from "@mui/joy/IconButton";
-import Typography from "@mui/joy/Typography";
 import { Filter, PlusCircle } from "react-feather";
 import { Category } from "../types/Category";
 import { Expense } from "../types/Expense";
@@ -31,19 +25,23 @@ import {
   formatDate,
   serverRequest,
 } from "../utils/utils";
+import dayjs from "dayjs";
 
 export default function OrderTable({
   createRow,
   type,
   items,
   saveItem,
+  removeItem,
 }: {
   createRow: Function;
   type: String;
   items: Expense[] | Income[];
   saveItem: Function;
+  removeItem: Function;
 }) {
   const [currency, setCurrency] = useState("pound");
+  const [block, setBlock] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [order, setOrder] = useState<Order>("desc");
   const [selected, setSelected] = useState<readonly string[]>([]);
@@ -51,22 +49,29 @@ export default function OrderTable({
   const [errors, setError] = useState(false);
 
   const addRow = () => {
-    let formattedDate = formatDate(new Date());
-    let item = {
-      id: String(Math.floor(Math.random() * 0.5)),
-      title: "",
-      date: formattedDate,
-      target: "",
-      category: "",
-      planned_amount: "",
-      status: "new",
-    };
-    createRow(item, type);
+    if (!block) {
+      let formattedDate = formatDate(new Date());
+      let item = {
+        id: String(Math.floor(Math.random() * 0.5)),
+        title: "",
+        date: formattedDate,
+        target: "",
+        category: "",
+        planned_amount: "",
+        status: "new",
+      };
+      createRow(item, type);
+      setBlock(true);
+    }
   };
 
   const onSubmit = (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
-    const data = new FormData(form.currentTarget);
+    const formData = new FormData(form.currentTarget);
+    const formJson = Object.fromEntries(formData.entries());
+    saveItem(formJson);
+    form.currentTarget.reset();
+    setBlock(false);
   };
 
   useEffect(() => {
@@ -79,7 +84,7 @@ export default function OrderTable({
       },
       setError
     );
-  }, [items]);
+  }, []);
 
   return (
     <>
@@ -108,21 +113,6 @@ export default function OrderTable({
         >
           <Filter />
         </IconButton>
-        <Modal open={open} onClose={() => setOpen(false)}>
-          <ModalDialog aria-labelledby="filter-modal" layout="fullscreen">
-            <ModalClose />
-            <Typography id="filter-modal" level="h2">
-              Filters
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Filters addRow={addRow} />
-              <Button color="primary" onClick={() => setOpen(false)}>
-                Submit
-              </Button>
-            </Sheet>
-          </ModalDialog>
-        </Modal>
       </Sheet>
       <Box
         className="SearchAndFilters-tabletUp"
@@ -151,7 +141,7 @@ export default function OrderTable({
           />
         </FormControl>
 
-        <Filters addRow={addRow} />
+        <Filters addRow={addRow} categories={categories} />
       </Box>
       <Sheet
         className="OrderTableContainer"
@@ -179,27 +169,6 @@ export default function OrderTable({
           >
             <thead>
               <tr>
-                <th style={{ width: 48, textAlign: "center", padding: 12 }}>
-                  <Checkbox
-                    indeterminate={
-                      selected.length > 0 && selected.length !== items.length
-                    }
-                    checked={selected.length === items.length}
-                    onChange={(event) => {
-                      setSelected(
-                        event.target.checked
-                          ? items.map((row) => row.title)
-                          : []
-                      );
-                    }}
-                    color={
-                      selected.length > 0 || selected.length === items.length
-                        ? "primary"
-                        : undefined
-                    }
-                    sx={{ verticalAlign: "text-bottom" }}
-                  />
-                </th>
                 <th style={{ width: 140, padding: 12 }}>
                   <Link
                     underline="none"
@@ -229,48 +198,51 @@ export default function OrderTable({
             <tbody>
               {stableSort(items, getComparator(order, "id")).map((row) => (
                 <tr key={row.id}>
-                  <td style={{ textAlign: "center" }}>
-                    {/* <Checkbox
-                    checked={selected.includes(items.id)}
-                    color={selected.includes(items.id) ? "primary" : undefined}
-                    onChange={(event) => {
-                      setSelected((ids) =>
-                        event.target.checked
-                          ? ids.concat(items.id)
-                          : ids.filter((itemId) => itemId !== row.id)
-                      );
-                    }}
-                    slotProps={{ checkbox: { sx: { textAlign: "left" } } }}
-                    sx={{ verticalAlign: "text-bottom" }}
-                  /> */}
-                  </td>
                   <td>
                     {row.status === "new" ? (
-                      <Input id="title" name="title" />
+                      <Input id="title" name="title" required />
                     ) : (
-                      <Input id="title" name="title" disabled />
+                      <Input
+                        id="title"
+                        name="title"
+                        sx={{ pointerEvents: "none" }}
+                        value={row.title}
+                      />
                     )}
                   </td>
                   <td>
                     {row.status === "new" ? (
-                      <Input type="date" id="date" name="date" />
+                      <Input type="date" id="date" name="date" required />
                     ) : (
-                      <Input type="date" id="date" name="date" disabled />
+                      <Input
+                        type="date"
+                        id="date"
+                        name="date"
+                        sx={{ pointerEvents: "none" }}
+                        value={dayjs(row.date).format("YYYY-MM-DD")}
+                      />
                     )}
                   </td>
                   <td>
                     {row.status === "new" ? (
-                      <Input type="text" id="text" name="text" />
+                      <Input type="text" id="text" name="text" required />
                     ) : (
-                      <Input type="text" id="text" name="text" disabled />
+                      <Input
+                        type="text"
+                        id="text"
+                        name="text"
+                        sx={{ pointerEvents: "none" }}
+                        value={row.description}
+                      />
                     )}
                   </td>
                   <td>
                     {row.status === "new" ? (
                       <Input
                         type="number"
-                        id="number"
-                        name="number"
+                        id="amount"
+                        name="amount"
+                        required
                         startDecorator={
                           { pound: "£", dollar: "$", euro: "€" }[currency]
                         }
@@ -278,9 +250,10 @@ export default function OrderTable({
                     ) : (
                       <Input
                         type="number"
-                        id="number"
-                        name="number"
-                        disabled
+                        id="amount"
+                        name="amount"
+                        sx={{ pointerEvents: "none" }}
+                        value={row.actual_amount}
                         startDecorator={
                           { pound: "£", dollar: "$", euro: "€" }[currency]
                         }
@@ -288,30 +261,62 @@ export default function OrderTable({
                     )}
                   </td>
                   <td>
-                    <FormControl size="sm">
-                      <Select placeholder="All">
-                        {categories.map((category) => (
-                          <Option key={category.id} value={category.id}>
-                            {category.title}
+                    {row.status === "new" ? (
+                      <FormControl size="sm">
+                        <Select placeholder="All" id="category" name="category">
+                          {categories.map((category) => (
+                            <Option key={category.id} value={category.id}>
+                              {category.title}
+                            </Option>
+                          ))}
+                          <Option
+                            value="add"
+                            sx={{
+                              display: "flex",
+                              width: "100%",
+                              justifyItems: "center",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          >
+                            <PlusCircle
+                              size="16"
+                              className="text-center"
+                            ></PlusCircle>
                           </Option>
-                        ))}
-                        <Option
-                          value="add"
-                          sx={{
-                            display: "flex",
-                            width: "100%",
-                            justifyItems: "center",
-                            marginLeft: "auto",
-                            marginRight: "auto",
-                          }}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <FormControl size="sm">
+                        <Select
+                          placeholder="All"
+                          id="category"
+                          name="category"
+                          sx={{ pointerEvents: "none" }}
                         >
-                          <PlusCircle
-                            size="16"
-                            className="text-center"
-                          ></PlusCircle>
-                        </Option>
-                      </Select>
-                    </FormControl>
+                          {categories.map((category) => (
+                            <Option key={category.id} value={category.id}>
+                              {category.title}
+                            </Option>
+                          ))}
+                          <Option
+                            value="add"
+                            sx={{
+                              display: "flex",
+                              width: "100%",
+                              justifyItems: "center",
+                              marginLeft: "auto",
+                              marginRight: "auto",
+                            }}
+                          >
+                            <PlusCircle
+                              size="16"
+                              className="text-center"
+                            ></PlusCircle>
+                          </Option>
+                        </Select>
+                      </FormControl>
+                    )}
                   </td>
                   <td>
                     {row.status === "new" ? (
@@ -332,8 +337,9 @@ export default function OrderTable({
                           fontWeight="lg"
                           component="button"
                           color="neutral"
+                          onClick={() => removeItem(row.id)}
                         >
-                          Archive
+                          Delete
                         </Link>
                       </>
                     )}

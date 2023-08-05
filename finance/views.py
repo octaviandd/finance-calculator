@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, YearlyPeriodSerializer, CategorySerializer , MonthlyPeriodSerializer
+from .serializers import UserSerializer, YearlyPeriodSerializer, CategorySerializer , MonthlyPeriodSerializer, ExpenseSerializer
 from .models import Expense, Income, Category, YearlyPeriod, Profile, MonthlyPeriod
 from django.db import IntegrityError
 from django.dispatch import receiver
@@ -136,18 +136,23 @@ def edit_monthly_period(request, id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def create_monthly_period_expense(request, id):
-    title = request.data.get('title')
-    amount = request.data.get('planned_amount')
-    category = request.data.get('category')
-    description = request.data.get('target')
-    user = request.user
+    expense_data = request.data.get('expense')
+    title = expense_data.get('title')
+    amount = expense_data.get('amount')
+    description = expense_data.get('text')
+    date = expense_data.get('date')
+
+    monthly_period = MonthlyPeriod.objects.get(pk = id)
+    category = Category.objects.get(pk = 1)
 
     try:
-        Expense.objects.create(user = user, planned_amount = amount, category = category, description = description, title = title)
+        expense = Expense.objects.create(actual_amount = amount, date = date, category = category, description = description, title = title)
+        monthly_period.expenses.add(expense)
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
     
-    return Response({"message": 'Expense created'}, status = 200)
+    serializer = ExpenseSerializer(expense)
+    return Response(serializer.data, status = 200)
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -157,10 +162,14 @@ def create_monthly_period_income(id, request):
     amount = request.data.get('amount')
     category = request.data.get('category')
     description = request.data.get('description')
-    user = request.user
+    date = request.data.get('date')
+
+    monthly_period = MonthlyPeriod.objects.get(pk = id)
+    category = Category.objects.get(pk = 1)
 
     try:
-        Income.objects.create(user = user, amount = amount, category = category, description = description, title = title)
+        income = Income.objects.create(planned_amount = amount, date = date, category = category, description = description, title = title)
+        monthly_period.expenses.add(income)
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
     

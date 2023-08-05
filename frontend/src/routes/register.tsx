@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { serverRequest } from "../utils/utils";
+import { GitHub } from "react-feather";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -244,12 +245,7 @@ export default function RegisterPage() {
             type="button"
             className="flex w-full items-center justify-center rounded-sm bg-[#24292E] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            <img
-              className="bg-transparent mr-3"
-              height="22"
-              width="22"
-              src="github-mark-white.png"
-            />
+            <GitHub width={22} height={22} />
             <span>GitHub</span>
           </button>
         </a>

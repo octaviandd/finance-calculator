@@ -63,8 +63,10 @@ export default function LoginPage() {
           navigate("/profile");
         });
     } catch (error) {
+      console.log(error);
       const err = error as AxiosError;
       if (axios.isAxiosError(err)) {
+        console.log(err);
         setError(true);
       }
     }

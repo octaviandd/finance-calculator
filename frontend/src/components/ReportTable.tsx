@@ -1,25 +1,20 @@
 /** @format */
 
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
-import Divider from "@mui/joy/Divider";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
-import Modal from "@mui/joy/Modal";
-import ModalDialog from "@mui/joy/ModalDialog";
-import ModalClose from "@mui/joy/ModalClose";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import Typography from "@mui/joy/Typography";
-import { stableSort, getComparator } from "../utils/utils";
+import { stableSort, getComparator, serverRequest } from "../utils/utils";
 import { Order } from "../types/Order";
 import { Expense } from "../types/Expense";
 import { Income } from "../types/Income";
 import { Filters } from "./Filters";
 import { IconButton } from "@mui/joy";
+import { Category } from "../types/Category";
 
 export default function OrderTable({
   items,
@@ -30,6 +25,20 @@ export default function OrderTable({
 }) {
   const [order, setOrder] = React.useState<Order>("desc");
   const [open, setOpen] = React.useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [errors, setError] = useState(false);
+
+  useEffect(() => {
+    serverRequest(
+      "get",
+      `finance/categories`,
+      undefined,
+      (data: Category[]) => {
+        setCategories(data);
+      },
+      setError
+    );
+  }, []);
 
   return (
     <React.Fragment>
@@ -58,21 +67,6 @@ export default function OrderTable({
         >
           <i data-feather="filter" />
         </IconButton>
-        <Modal open={open} onClose={() => setOpen(false)}>
-          <ModalDialog aria-labelledby="filter-modal" layout="fullscreen">
-            <ModalClose />
-            <Typography id="filter-modal" level="h2">
-              Filters
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <Sheet sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Filters addRow={undefined} />
-              <Button color="primary" onClick={() => setOpen(false)}>
-                Submit
-              </Button>
-            </Sheet>
-          </ModalDialog>
-        </Modal>
       </Sheet>
       <Box
         className="SearchAndFilters-tabletUp"
@@ -101,7 +95,7 @@ export default function OrderTable({
           />
         </FormControl>
 
-        <Filters addRow={undefined} />
+        <Filters addRow={undefined} categories={categories} />
       </Box>
       <Sheet
         className="OrderTableContainer"
@@ -128,7 +122,7 @@ export default function OrderTable({
         >
           <thead>
             <tr>
-              <th style={{ width: 140, padding: 12 }}>
+              <th style={{ width: 160, padding: 12 }}>
                 <Link
                   underline="none"
                   color="primary"
@@ -147,19 +141,22 @@ export default function OrderTable({
                   Title
                 </Link>
               </th>
-              <th style={{ width: 120, padding: 12 }}>Planned</th>
-              <th style={{ width: 220, padding: 12 }}>Actual</th>
-              <th style={{ width: 120, padding: 12 }}>Diff</th>
+              <th style={{ width: 160, padding: 12 }}>Planned</th>
+              <th style={{ width: 160, padding: 12 }}>Actual</th>
+              <th style={{ width: "100%", padding: 12, textAlign: "center" }}>
+                Diff
+              </th>
             </tr>
           </thead>
           <tbody>
             {stableSort(items, getComparator(order, "id")).map((row) => (
               <tr key={row.id}>
-                <td style={{ textAlign: "center" }}></td>
-                <td>{row.title}</td>
+                <td style={{ textAlign: "center" }}>{row.title}</td>
                 <td>{row.planned_amount}</td>
                 <td>{row.actual_amount}</td>
-                <td></td>
+                <td style={{ textAlign: "center" }}>
+                  {row.planned_amount - row.actual_amount}
+                </td>
               </tr>
             ))}
           </tbody>
