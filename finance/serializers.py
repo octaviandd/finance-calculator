@@ -57,13 +57,40 @@ class ExpenseSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'planned_amount', 'actual_amount', 'category', 'date']
     
 
-class MonthlyPeriodSerializer(serializers.ModelSerializer): 
+class MonthlyPeriodSerializer(serializers.ModelSerializer):
     incomes = IncomeSerializer(many=True, read_only=True)
     expenses = ExpenseSerializer(many=True, read_only=True)
 
+    monthly_total_planned_incomes = serializers.SerializerMethodField()
+    monthly_total_planned_expenses = serializers.SerializerMethodField()
+    monthly_total_actual_incomes = serializers.SerializerMethodField()
+    monthly_total_actual_expenses = serializers.SerializerMethodField()
+    monthly_saved_this_month = serializers.SerializerMethodField()
+    monthly_end_balance = serializers.SerializerMethodField()
     class Meta:
         model = MonthlyPeriod
-        fields = ['id', 'title', 'total_spend', 'total_income', 'total_savings', 'total_saved_this_period', 'start_balance', 'from_date', 'to_date', 'end_balance', 'incomes', 'expenses']
+        fields = ['id', 'title', 'from_date', 'to_date', 'incomes', 'expenses', 'total_spend', 'start_balance',
+                  'monthly_total_planned_incomes', 'monthly_total_actual_incomes', 
+                  'monthly_total_actual_expenses', 'monthly_total_planned_expenses',
+                  'monthly_saved_this_month', 'monthly_end_balance']
+
+    def get_monthly_total_planned_incomes(self, obj):
+        return obj.monthly_total_planned_incomes()
+    
+    def get_monthly_total_planned_expenses(self, obj):
+        return obj.monthly_total_planned_expenses()
+    
+    def get_monthly_total_actual_incomes(self, obj):
+        return obj.monthly_total_actual_incomes()
+    
+    def get_monthly_total_actual_expenses(self, obj):
+        return obj.monthly_total_actual_expenses()
+    
+    def get_monthly_saved_this_month(self, obj):
+        return obj.monthly_saved_this_month()
+    
+    def get_monthly_end_balance(self, obj):
+        return obj.monthly_end_balance()
 
 
 class YearlyPeriodSerializer(serializers.ModelSerializer): 

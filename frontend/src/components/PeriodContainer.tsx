@@ -27,13 +27,13 @@ export default function BasicCard({ period }: { period: MonthlyPeriod }) {
         <div>
           <Typography level="body3">Income:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="success">
-            £{period.total_income}
+            £{period.monthly_total_actual_incomes}
           </Typography>
         </div>
         <div>
           <Typography level="body3">Expenses:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="danger">
-            £{period.total_spend}
+            £{period.monthly_total_actual_expenses}
           </Typography>
         </div>
 

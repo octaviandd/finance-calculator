@@ -176,6 +176,21 @@ def create_monthly_period_income(id, request):
     return Response({"message": 'Expense created'}, status = 200)
 
 
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_monthly_starting_balance(request, id):
+    start_balance = request.data.get('start_balance')
+    monthly_period = MonthlyPeriod.objects.get(pk = id)
+
+    try:
+        monthly_period.start_balance = start_balance
+        monthly_period.save()
+    except (IntegrityError, ValidationError, AttributeError) as e:
+        raise e
+    
+    return Response({"message": 'Start balance updated.'}, status = 200)
+
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])

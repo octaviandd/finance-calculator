@@ -2,7 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { Form, Link, useLoaderData, useParams } from "react-router-dom";
-import { Box, Button, Sheet, Stack, Typography } from "@mui/joy";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Sheet,
+  Stack,
+  Typography,
+} from "@mui/joy";
 import { Plus } from "react-feather";
 import ReportTable from "../components/ReportTable";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
@@ -23,7 +32,31 @@ export default function Period() {
     );
   };
 
+  const handleStartBalanceChange = (value: string) => {
+    if (period) {
+      setPeriod((prevState) => {
+        if (prevState) {
+          return {
+            ...prevState,
+            start_balance: parseFloat(value),
+          };
+        }
+      });
+    }
+  };
+
+  const saveStartBalance = () => {
+    serverRequest(
+      "post",
+      `finance/monthly-period/${periodId}/update-starting-balance`,
+      { start_balance: period?.start_balance },
+      (data: number) => console.log(data),
+      setError
+    );
+  };
+
   useEffect(() => {
+    console.log(period);
     getMonthlyPeriod();
   }, []);
 
@@ -43,9 +76,32 @@ export default function Period() {
           justifyContent: "space-between",
         }}
       >
-        <Typography level="h1" fontSize="xl3" sx={{ mb: 1 }}>
-          {period?.title}'s report
-        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Typography level="h1" fontSize="xl3" sx={{ mb: 1 }}>
+            {period?.title}'s report
+          </Typography>
+          <FormControl size="sm">
+            <FormLabel>Start balance:</FormLabel>
+            <Box sx={{ display: "flex" }}>
+              <Input
+                type="number"
+                placeholder="£999.99"
+                value={period?.start_balance}
+                onChange={(event) =>
+                  handleStartBalanceChange(event.target.value)
+                }
+              ></Input>
+              <Button
+                variant="plain"
+                sx={{ margin: 0, marginLeft: "6px" }}
+                type="submit"
+                onClick={() => saveStartBalance()}
+              >
+                Save
+              </Button>
+            </Box>
+          </FormControl>
+        </Box>
         <Link to={`/monthly-period/${periodId}/edit`}>
           <Button variant="solid">
             <Typography fontSize="md" sx={{ mx: 1, color: "white" }}>
@@ -79,21 +135,19 @@ export default function Period() {
             <div className="font-medium">
               <p className="text-xl text-[#F46524]">END BALANCE</p>
               <p className="italic text-[#F46524]">
-                £
-                {(period?.start_balance as number) +
-                  (period?.total_saved_this_period as number)}
+                £{period?.monthly_end_balance}
               </p>
             </div>
           </div>
         </div>
         <div className="py-10 px-20 bg-[#ECEDEF]">
           <div className="border-b border-dashed border-neutral-400 pb-5">
-            <p className="text-3xl text-center">£{period?.total_savings}</p>
+            <p className="text-3xl text-center">£{0}</p>
             <p className="text-center">Increase in total savings</p>
           </div>
           <div className="pt-6">
             <p className="text-3xl text-center">
-              {period?.total_saved_this_period}
+              {period?.monthly_saved_this_month}
             </p>
             <p className="text-center">Saved this month</p>
           </div>
