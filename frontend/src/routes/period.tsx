@@ -46,6 +46,31 @@ export default function Period() {
     }
   };
 
+  const handleExpensePlannedAmount = (id: string, value: string) => {
+    if (period) {
+      setPeriod((prevState) => {
+        if (prevState) {
+          let toModifyExpenseIndex = prevState.expenses.findIndex(
+            (expense) => expense.id == id
+          );
+          prevState.expenses[toModifyExpenseIndex].planned_amount =
+            parseFloat(value);
+          return prevState;
+        }
+      });
+
+      serverRequest(
+        "post",
+        `finance/expense/${id}/update-planned-amount`,
+        { amount: parseFloat(value) },
+        (data: string) => console.log(data),
+        setError
+      );
+    }
+  };
+
+  const handleIncomePlannedAmount = (id: string) => {};
+
   const saveStartBalance = () => {
     serverRequest(
       "post",
@@ -163,10 +188,20 @@ export default function Period() {
       </Stack>
 
       {period?.expenses && (
-        <ReportTable items={period?.expenses} type="expenses"></ReportTable>
+        <ReportTable
+          items={period?.expenses}
+          type="expenses"
+          setExpensePlannedAmount={handleExpensePlannedAmount}
+          setIncomePlannedAmount={handleIncomePlannedAmount}
+        ></ReportTable>
       )}
       {period?.incomes && (
-        <ReportTable items={period?.incomes} type="incomes"></ReportTable>
+        <ReportTable
+          items={period?.incomes}
+          type="incomes"
+          setExpensePlannedAmount={handleExpensePlannedAmount}
+          setIncomePlannedAmount={handleIncomePlannedAmount}
+        ></ReportTable>
       )}
     </Sheet>
   );

@@ -20,6 +20,15 @@ import calendar
 
 load_dotenv('.env')
 
+
+def create_default_expenses_categories():
+    default_expenses = ['Food', 'Gifts', 'Health/medical', 'Home', 'Transportation', 'Personal', 'Pets', 'Utilities', 'Travel', 'Debt']
+
+def create_default_incomes_categories():
+    default_incomes = ['Savings', 'Paychecks', 'Bonus', 'Interest', 'Gifts', 'Other']
+
+
+
 # AUTH ROUTES #
 
 @api_view(['POST'])
@@ -50,6 +59,9 @@ def create_user_profile(sender, instance, created, **kwargs):
             from_date = datetime(datetime.now().year, index, 1).date()
             to_date = datetime(datetime.now().year, index, last_day).date()
             monthly_period = MonthlyPeriod.objects.create(title = month, from_date = from_date, to_date = to_date)
+            default_expenses = ['Food', 'Gifts', 'Health/medical', 'Home', 'Transportation', 'Personal', 'Pets', 'Utilities', 'Travel', 'Debt']
+            default_incomes = ['Savings', 'Paychecks', 'Bonus', 'Interest', 'Gifts', 'Other']
+
             yearly_period.monthly_periods.add(monthly_period)
 
 
@@ -213,3 +225,21 @@ def get_currency_exchange(request):
     result = client.latest(base_currency='GBP', currencies=['EUR', 'USD'])
 
     return Response(result, status = 200)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_expense_planned_amount(request, id):
+    planned_amount = request.data.get('amount')
+
+    expense = Expense.objects.get(pk = id)
+    try:
+        expense.planned_amount = planned_amount
+        expense.save()
+    except (IntegrityError, ValidationError, AttributeError) as e:
+        raise e
+
+    return Response({"message": "Expense planned amount updated"}, 200)
+   
+

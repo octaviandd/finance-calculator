@@ -189,7 +189,7 @@ export default function OrderTable({
                   </Link>
                 </th>
                 <th style={{ width: 120, padding: 12 }}>Date</th>
-                <th style={{ width: 220, padding: 12 }}>To</th>
+                {/* <th style={{ width: 220, padding: 12 }}>To</th> */}
                 <th style={{ width: 120, padding: 12 }}>Amount</th>
                 <th style={{ width: 120, padding: 12 }}>Category</th>
                 <th style={{ width: 160, padding: 12 }}>Actions</th>
@@ -223,7 +223,7 @@ export default function OrderTable({
                       />
                     )}
                   </td>
-                  <td>
+                  {/* <td>
                     {row.status === "new" ? (
                       <Input type="text" id="text" name="text" required />
                     ) : (
@@ -235,7 +235,7 @@ export default function OrderTable({
                         value={row.description}
                       />
                     )}
-                  </td>
+                  </td> */}
                   <td>
                     {row.status === "new" ? (
                       <Input

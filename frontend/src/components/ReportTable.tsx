@@ -15,14 +15,20 @@ import { Income } from "../types/Income";
 import { Filters } from "./Filters";
 import { IconButton } from "@mui/joy";
 import { Category } from "../types/Category";
+import { ArrowDown, Filter, Search } from "react-feather";
 
-export default function OrderTable({
+export default function ReportTable({
   items,
+  setExpensePlannedAmount,
+  setIncomePlannedAmount,
   type,
 }: {
   items: Expense[] | Income[];
+  setExpensePlannedAmount: Function;
+  setIncomePlannedAmount: Function;
   type: string;
 }) {
+  const [currency, setCurrency] = useState("pound");
   const [order, setOrder] = React.useState<Order>("desc");
   const [open, setOpen] = React.useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -56,7 +62,7 @@ export default function OrderTable({
         <Input
           size="sm"
           placeholder="Search"
-          startDecorator={<i data-feather="search" />}
+          startDecorator={<Search width={16} height={16} />}
           sx={{ flexGrow: 1 }}
         />
         <IconButton
@@ -65,7 +71,7 @@ export default function OrderTable({
           color="neutral"
           onClick={() => setOpen(true)}
         >
-          <i data-feather="filter" />
+          <Filter />
         </IconButton>
       </Sheet>
       <Box
@@ -91,7 +97,7 @@ export default function OrderTable({
           <FormLabel>Search for {type} source</FormLabel>
           <Input
             placeholder="Search"
-            startDecorator={<i data-feather="search" />}
+            startDecorator={<Search width={16} height={16} />}
           />
         </FormControl>
 
@@ -129,7 +135,7 @@ export default function OrderTable({
                   component="button"
                   onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
                   fontWeight="lg"
-                  endDecorator={<i data-feather="arrow-down" />}
+                  endDecorator={<ArrowDown width={16} height={16} />}
                   sx={{
                     "& svg": {
                       transition: "0.2s",
@@ -151,11 +157,23 @@ export default function OrderTable({
           <tbody>
             {stableSort(items, getComparator(order, "id")).map((row) => (
               <tr key={row.id}>
-                <td style={{ textAlign: "center" }}>{row.title}</td>
-                <td>{row.planned_amount}</td>
-                <td>{row.actual_amount}</td>
+                <td style={{ textAlign: "center" }}>{row.category.title}</td>
+                <td>
+                  <Input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    value={row.planned_amount}
+                    onChange={(e) =>
+                      setExpensePlannedAmount(row.id, e.target.value)
+                    }
+                    required
+                    startDecorator={{ pound: "£" }[currency]}
+                  />
+                </td>
+                <td>£{row.actual_amount}</td>
                 <td style={{ textAlign: "center" }}>
-                  {row.planned_amount - row.actual_amount}
+                  £{row.planned_amount - row.actual_amount}
                 </td>
               </tr>
             ))}
