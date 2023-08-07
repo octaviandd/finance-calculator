@@ -20,6 +20,7 @@ import { serverRequest } from "../utils/utils";
 export default function Period() {
   const [error, setError] = useState(false);
   const { periodId } = useParams();
+  const [currency, setCurrency] = useState("pound");
   const [period, setPeriod] = useState<MonthlyPeriod>();
 
   const getMonthlyPeriod = async () => {
@@ -87,6 +88,9 @@ export default function Period() {
                   type="number"
                   placeholder="£999.99"
                   value={period?.start_balance}
+                  startDecorator={
+                    { pound: "£", dollar: "$", euro: "€" }[currency]
+                  }
                   onChange={(event) =>
                     handleStartBalanceChange(event.target.value)
                   }
@@ -127,7 +131,7 @@ export default function Period() {
             <div className="font-medium">
               <p className="text-xl text-[#334960]">START BALANCE</p>
               <p className="text-right text-[#334960] italic">
-                £{period?.start_balance}
+                £{period?.start_balance && period.start_balance.toFixed(2)}
               </p>
             </div>
           </div>
@@ -136,7 +140,9 @@ export default function Period() {
             <div className="font-medium">
               <p className="text-xl text-[#F46524]">END BALANCE</p>
               <p className="italic text-[#F46524]">
-                £{period?.monthly_end_balance}
+                £
+                {period?.monthly_end_balance &&
+                  period.monthly_end_balance.toFixed(2)}
               </p>
             </div>
           </div>
@@ -148,7 +154,8 @@ export default function Period() {
           </div>
           <div className="pt-6">
             <p className="text-3xl text-center">
-              {period?.monthly_saved_this_month}
+              {period?.monthly_saved_this_month &&
+                period.monthly_saved_this_month.toFixed(2)}
             </p>
             <p className="text-center">Saved this month</p>
           </div>

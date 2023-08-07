@@ -12,8 +12,13 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from datetime import datetime
+from dotenv import load_dotenv
+import freecurrencyapi
 import json
+import os
 import calendar
+
+load_dotenv('.env')
 
 # AUTH ROUTES #
 
@@ -196,3 +201,15 @@ def get_categories(request):
     categories = Category.objects.all()
     serializer = CategorySerializer(categories, many = True)
     return Response(serializer.data, status = 200)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_currency_exchange(request):
+    currency_currency = request.data.get('currency')
+    client = freecurrencyapi.Client(os.getenv('FREE_CURRENCY_API'))
+
+    result = client.latest(base_currency='GBP', currencies=['EUR', 'USD'])
+
+    return Response(result, status = 200)

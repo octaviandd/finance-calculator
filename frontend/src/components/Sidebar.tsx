@@ -1,6 +1,6 @@
 /** @format */
 
-import * as React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import Avatar from "@mui/joy/Avatar";
@@ -25,13 +25,15 @@ import {
   DollarSign,
 } from "react-feather";
 import { Link } from "react-router-dom";
+import Modal from "./Modal";
 
 const Dropdown = styled("i")(({ theme }) => ({
   color: theme.vars.palette.text.tertiary,
 }));
 
 export default function Sidebar() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   return (
     <Sheet
@@ -191,7 +193,10 @@ export default function Sidebar() {
               <ListItemDecorator>
                 <DollarSign />
               </ListItemDecorator>
-              <ListItemContent>Change Currency</ListItemContent>
+              <ListItemContent>
+                <Box onClick={() => setOpenModal(true)}>Change Currency</Box>
+                <Modal open={openModal} setOpen={setOpenModal}></Modal>
+              </ListItemContent>
             </ListItemButton>
           </ListItem>
           <ListItem>

@@ -23,6 +23,7 @@ export default function MyProfile() {
       `finance/yearly-periods`,
       undefined,
       (data: Period[]) => {
+        console.log(data);
         setPeriods(data);
       },
       setErrors
