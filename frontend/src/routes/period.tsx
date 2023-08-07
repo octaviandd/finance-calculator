@@ -53,9 +53,9 @@ export default function Period() {
           let toModifyExpenseIndex = prevState.expenses.findIndex(
             (expense) => expense.id == id
           );
-          prevState.expenses[toModifyExpenseIndex].planned_amount =
-            parseFloat(value);
-          return prevState;
+          let newExpenses = [...prevState.expenses];
+          newExpenses[toModifyExpenseIndex].planned_amount = value;
+          return { ...prevState, expenses: newExpenses };
         }
       });
 
@@ -69,7 +69,28 @@ export default function Period() {
     }
   };
 
-  const handleIncomePlannedAmount = (id: string) => {};
+  const handleIncomePlannedAmount = (id: string, value: string) => {
+    if (period) {
+      setPeriod((prevState) => {
+        if (prevState) {
+          let toModifyIncomeIndex = prevState.incomes.findIndex(
+            (income) => income.id == id
+          );
+          let newIncomes = [...prevState.incomes];
+          newIncomes[toModifyIncomeIndex].planned_amount = value;
+          return { ...prevState, incomes: newIncomes };
+        }
+      });
+
+      serverRequest(
+        "post",
+        `finance/income/${id}/update-planned-amount`,
+        { amount: parseFloat(value) },
+        (data: string) => console.log(data),
+        setError
+      );
+    }
+  };
 
   const saveStartBalance = () => {
     serverRequest(
@@ -187,22 +208,34 @@ export default function Period() {
         </div>
       </Stack>
 
-      {period?.expenses && (
-        <ReportTable
-          items={period?.expenses}
-          type="expenses"
-          setExpensePlannedAmount={handleExpensePlannedAmount}
-          setIncomePlannedAmount={handleIncomePlannedAmount}
-        ></ReportTable>
-      )}
-      {period?.incomes && (
-        <ReportTable
-          items={period?.incomes}
-          type="incomes"
-          setExpensePlannedAmount={handleExpensePlannedAmount}
-          setIncomePlannedAmount={handleIncomePlannedAmount}
-        ></ReportTable>
-      )}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { sm: "1fr", lg: "1fr 1fr" },
+          gap: "10px",
+        }}
+      >
+        {period?.expenses && (
+          <Box>
+            <Typography fontSize="xl2">Expenses</Typography>
+            <ReportTable
+              items={period?.expenses}
+              type="expenses"
+              setPlannedAmount={handleExpensePlannedAmount}
+            ></ReportTable>
+          </Box>
+        )}
+        {period?.incomes && (
+          <Box>
+            <Typography fontSize="xl2">Incomes</Typography>
+            <ReportTable
+              items={period?.incomes}
+              type="incomes"
+              setPlannedAmount={handleIncomePlannedAmount}
+            ></ReportTable>
+          </Box>
+        )}
+      </Box>
     </Sheet>
   );
 }

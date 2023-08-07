@@ -19,13 +19,11 @@ import { ArrowDown, Filter, Search } from "react-feather";
 
 export default function ReportTable({
   items,
-  setExpensePlannedAmount,
-  setIncomePlannedAmount,
+  setPlannedAmount,
   type,
 }: {
   items: Expense[] | Income[];
-  setExpensePlannedAmount: Function;
-  setIncomePlannedAmount: Function;
+  setPlannedAmount: Function;
   type: string;
 }) {
   const [currency, setCurrency] = useState("pound");
@@ -47,7 +45,7 @@ export default function ReportTable({
   }, []);
 
   return (
-    <React.Fragment>
+    <Box>
       <Sheet
         className="SearchAndFilters-mobile"
         sx={{
@@ -59,12 +57,6 @@ export default function ReportTable({
           gap: 1,
         }}
       >
-        <Input
-          size="sm"
-          placeholder="Search"
-          startDecorator={<Search width={16} height={16} />}
-          sx={{ flexGrow: 1 }}
-        />
         <IconButton
           size="sm"
           variant="outlined"
@@ -93,14 +85,6 @@ export default function ReportTable({
           },
         }}
       >
-        <FormControl sx={{ flex: 1 }} size="sm">
-          <FormLabel>Search for {type} source</FormLabel>
-          <Input
-            placeholder="Search"
-            startDecorator={<Search width={16} height={16} />}
-          />
-        </FormControl>
-
         <Filters addRow={undefined} categories={categories} />
       </Box>
       <Sheet
@@ -149,7 +133,14 @@ export default function ReportTable({
               </th>
               <th style={{ width: 160, padding: 12 }}>Planned</th>
               <th style={{ width: 160, padding: 12 }}>Actual</th>
-              <th style={{ width: "100%", padding: 12, textAlign: "center" }}>
+              <th
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  textAlign: "right",
+                  paddingRight: "50px",
+                }}
+              >
                 Diff
               </th>
             </tr>
@@ -163,23 +154,22 @@ export default function ReportTable({
                     type="number"
                     id="amount"
                     name="amount"
+                    variant="plain"
                     value={row.planned_amount}
-                    onChange={(e) =>
-                      setExpensePlannedAmount(row.id, e.target.value)
-                    }
+                    onChange={(e) => setPlannedAmount(row.id, e.target.value)}
                     required
                     startDecorator={{ pound: "£" }[currency]}
                   />
                 </td>
                 <td>£{row.actual_amount}</td>
-                <td style={{ textAlign: "center" }}>
-                  £{row.planned_amount - row.actual_amount}
+                <td style={{ textAlign: "right", paddingRight: "50px" }}>
+                  £{Number(row.planned_amount) - Number(row.actual_amount)}
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       </Sheet>
-    </React.Fragment>
+    </Box>
   );
 }

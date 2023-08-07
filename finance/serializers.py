@@ -40,19 +40,19 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'title', 'description']
+        fields = ['id', 'title']
 
 class IncomeSerializer(serializers.ModelSerializer): 
     category = CategorySerializer(many = False, read_only = True)
     class Meta:
         model = Income
-        fields = ['id', 'title', 'description', 'planned_amount', 'actual_amount', 'category', 'date']
+        fields = ['id', 'title', 'planned_amount', 'actual_amount', 'category', 'date']
 
 class ExpenseSerializer(serializers.ModelSerializer): 
     category = CategorySerializer(many = False, read_only = True)
     class Meta:
         model = Expense
-        fields = ['id', 'title', 'description', 'planned_amount', 'actual_amount', 'category', 'date']
+        fields = ['id', 'title', 'planned_amount', 'actual_amount', 'category', 'date']
     
 
 class MonthlyPeriodSerializer(serializers.ModelSerializer):

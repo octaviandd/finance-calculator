@@ -29,17 +29,16 @@ export default function PeriodEdit() {
     if (type === "expense") {
       addExpense(item);
     } else if (type === "income") {
+      console.log("hit");
       addIncome(item);
     }
   };
-
-  const removeRow = (id: string) => {};
 
   const saveExpense = async (expense: Expense) => {
     serverRequest(
       "post",
       `finance/monthly-period/${periodId}/save-expense`,
-      { expense, periodId },
+      { type: expense, periodId },
       (data: Expense) => setExpenses((prevState) => [...prevState, data]),
       setError
     );
@@ -49,8 +48,8 @@ export default function PeriodEdit() {
     serverRequest(
       "post",
       `finance/monthly-period/${periodId}/save-income`,
-      { income, periodId },
-      (data: Expense) => setIncomes((prevState) => [...prevState, data]),
+      { type: income, periodId },
+      (data: Income) => setIncomes((prevState) => [...prevState, data]),
       setError
     );
   };
@@ -60,7 +59,7 @@ export default function PeriodEdit() {
       "post",
       `finance/monthly-period/${periodId}/save-income`,
       expenseId,
-      (data: Expense) => setIncomes((prevState) => [...prevState, data]),
+      (data: Expense) => setExpenses((prevState) => [...prevState, data]),
       setError
     );
   };
@@ -70,7 +69,7 @@ export default function PeriodEdit() {
       "post",
       `finance/monthly-period/${periodId}/save-income`,
       incomeId,
-      (data: Expense) => setIncomes((prevState) => [...prevState, data]),
+      (data: Income) => setIncomes((prevState) => [...prevState, data]),
       setError
     );
   };

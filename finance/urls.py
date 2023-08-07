@@ -13,6 +13,7 @@ urlpatterns = [
     path('monthly-period/<int:id>/save-expense', views.create_monthly_period_expense, name="monthly_period_expense"),
     path('monthly-period/<int:id>/update-starting-balance', views.update_monthly_starting_balance, name="monthly_starting_balance"),
     path('expense/<int:id>/update-planned-amount', views.update_expense_planned_amount, name="update_expense_planned_amount"),
+    path('income/<int:id>/update-planned-amount', views.update_income_planned_amount, name="update_income_planned_amount"),
     path('categories', views.get_categories, name="categories"),
 
     path('currency-exchange', views.get_currency_exchange, name="get_currency_exchange")

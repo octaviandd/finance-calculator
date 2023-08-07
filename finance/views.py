@@ -151,17 +151,16 @@ def edit_monthly_period(request, id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def create_monthly_period_expense(request, id):
-    expense_data = request.data.get('expense')
+    expense_data = request.data.get('type')
     title = expense_data.get('title')
     amount = expense_data.get('amount')
-    description = expense_data.get('text')
     date = expense_data.get('date')
 
     monthly_period = MonthlyPeriod.objects.get(pk = id)
     category = Category.objects.get(pk = 1)
 
     try:
-        expense = Expense.objects.create(actual_amount = amount, date = date, category = category, description = description, title = title)
+        expense = Expense.objects.create(actual_amount = amount, date = date, category = category, title = title)
         monthly_period.expenses.add(expense)
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
@@ -172,19 +171,19 @@ def create_monthly_period_expense(request, id):
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-def create_monthly_period_income(id, request):
-    title = request.data.get('title')
-    amount = request.data.get('amount')
-    category = request.data.get('category')
-    description = request.data.get('description')
-    date = request.data.get('date')
+def create_monthly_period_income(request, id):
+    income_data = request.data.get('type')
+    title = income_data.get('title')
+    amount = income_data.get('amount')
+    category = income_data.get('category')
+    date = income_data.get('date')
 
     monthly_period = MonthlyPeriod.objects.get(pk = id)
     category = Category.objects.get(pk = 1)
 
     try:
-        income = Income.objects.create(planned_amount = amount, date = date, category = category, description = description, title = title)
-        monthly_period.expenses.add(income)
+        income = Income.objects.create(actual_amount = amount, date = date, category = category, title = title)
+        monthly_period.incomes.add(income)
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
     
@@ -242,4 +241,18 @@ def update_expense_planned_amount(request, id):
 
     return Response({"message": "Expense planned amount updated"}, 200)
    
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_income_planned_amount(request, id):
+    planned_amount = request.data.get('amount')
 
+    income = Income.objects.get(pk = id)
+    try:
+        income.planned_amount = planned_amount
+        income.save()
+    except (IntegrityError, ValidationError, AttributeError) as e:
+        raise e
+
+    return Response({"message": "income planned amount updated"}, 200)
+   

@@ -44,7 +44,6 @@ export default function OrderTable({
   const [block, setBlock] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [order, setOrder] = useState<Order>("desc");
-  const [selected, setSelected] = useState<readonly string[]>([]);
   const [open, setOpen] = useState(false);
   const [errors, setError] = useState(false);
 
@@ -134,7 +133,7 @@ export default function OrderTable({
         }}
       >
         <FormControl sx={{ flex: 1 }} size="sm">
-          <FormLabel>Search for {type} source</FormLabel>
+          <FormLabel>Search for {type}</FormLabel>
           <Input
             placeholder="Search"
             startDecorator={<i data-feather="search" />}
@@ -189,7 +188,6 @@ export default function OrderTable({
                   </Link>
                 </th>
                 <th style={{ width: 120, padding: 12 }}>Date</th>
-                {/* <th style={{ width: 220, padding: 12 }}>To</th> */}
                 <th style={{ width: 120, padding: 12 }}>Amount</th>
                 <th style={{ width: 120, padding: 12 }}>Category</th>
                 <th style={{ width: 160, padding: 12 }}>Actions</th>
@@ -202,12 +200,7 @@ export default function OrderTable({
                     {row.status === "new" ? (
                       <Input id="title" name="title" required />
                     ) : (
-                      <Input
-                        id="title"
-                        name="title"
-                        sx={{ pointerEvents: "none" }}
-                        value={row.title}
-                      />
+                      <Input id="title" name="title" value={row.title} />
                     )}
                   </td>
                   <td>
@@ -218,24 +211,10 @@ export default function OrderTable({
                         type="date"
                         id="date"
                         name="date"
-                        sx={{ pointerEvents: "none" }}
                         value={dayjs(row.date).format("YYYY-MM-DD")}
                       />
                     )}
                   </td>
-                  {/* <td>
-                    {row.status === "new" ? (
-                      <Input type="text" id="text" name="text" required />
-                    ) : (
-                      <Input
-                        type="text"
-                        id="text"
-                        name="text"
-                        sx={{ pointerEvents: "none" }}
-                        value={row.description}
-                      />
-                    )}
-                  </td> */}
                   <td>
                     {row.status === "new" ? (
                       <Input
@@ -252,7 +231,6 @@ export default function OrderTable({
                         type="number"
                         id="amount"
                         name="amount"
-                        sx={{ pointerEvents: "none" }}
                         value={row.actual_amount}
                         startDecorator={
                           { pound: "£", dollar: "$", euro: "€" }[currency]
@@ -288,12 +266,7 @@ export default function OrderTable({
                       </FormControl>
                     ) : (
                       <FormControl size="sm">
-                        <Select
-                          placeholder="All"
-                          id="category"
-                          name="category"
-                          sx={{ pointerEvents: "none" }}
-                        >
+                        <Select placeholder="All" id="category" name="category">
                           {categories.map((category) => (
                             <Option key={category.id} value={category.id}>
                               {category.title}
@@ -325,22 +298,14 @@ export default function OrderTable({
                       </Button>
                     ) : (
                       <>
-                        <Link
-                          fontWeight="lg"
-                          component="button"
-                          color="neutral"
-                        >
-                          Edit
-                        </Link>
-                        <Link
+                        <Button
                           sx={{ ml: 2 }}
-                          fontWeight="lg"
-                          component="button"
-                          color="neutral"
+                          variant="plain"
+                          color="danger"
                           onClick={() => removeItem(row.id)}
                         >
                           Delete
-                        </Link>
+                        </Button>
                       </>
                     )}
                   </td>
