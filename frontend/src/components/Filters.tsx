@@ -13,7 +13,7 @@ type Props = {
 export const Filters = ({ addRow, categories }: Props) => {
   return (
     <React.Fragment>
-      <FormControl size="sm" sx={{ display: "flex", alignItems: "center" }}>
+      {/* <FormControl size="sm" sx={{ display: "flex", alignItems: "center" }}>
         <FormLabel>Status</FormLabel>
         <Select
           placeholder="Filter by status"
@@ -35,11 +35,11 @@ export const Filters = ({ addRow, categories }: Props) => {
             </Option>
           ))}
         </Select>
-      </FormControl>
+      </FormControl> */}
 
-      <FormControl size="sm">
+      <FormControl size="sm" sx={{ marginLeft: "auto" }}>
         {addRow && (
-          <Button variant="plain" sx={{ marginTop: "auto" }}>
+          <Button variant="soft" sx={{ marginTop: "auto" }}>
             <PlusCircle onClick={() => addRow()}></PlusCircle>
           </Button>
         )}

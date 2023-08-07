@@ -29,7 +29,6 @@ export default function PeriodEdit() {
     if (type === "expense") {
       addExpense(item);
     } else if (type === "income") {
-      console.log("hit");
       addIncome(item);
     }
   };

@@ -1,12 +1,13 @@
 /** @format */
 
-import * as React from "react";
+import React, { useContext, useState } from "react";
 import Modal from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import {
   Box,
+  CircularProgress,
   List,
   ListItem,
   ListItemButton,
@@ -14,6 +15,8 @@ import {
   ListItemDecorator,
 } from "@mui/joy";
 import { DollarSign } from "react-feather";
+import { serverRequest } from "../utils/utils";
+import { Store } from "../Store";
 
 export default function BasicModal({
   open,
@@ -22,6 +25,40 @@ export default function BasicModal({
   open: boolean;
   setOpen: Function;
 }) {
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { currency, setCurrency } = useContext(Store);
+
+  const handleCurrencyChange = ({
+    symbol,
+    currency,
+    title,
+  }: {
+    symbol: string;
+    currency: "GBP" | "EUR" | "USD";
+    title: string;
+  }) => {
+    let rate: number;
+    setLoading(true);
+    serverRequest(
+      "post",
+      `finance/currency-exchange`,
+      { currency: currency },
+      (data: { data: { EUR: number; GBP: number; USD: number } }) => {
+        setLoading(false);
+        rate = data.data[currency];
+        localStorage.setItem(
+          "currency",
+          JSON.stringify({ symbol, currency, rate, title })
+        );
+
+        setCurrency({ symbol, currency, rate, title });
+        setOpen(false);
+      },
+      setError
+    );
+  };
+
   return (
     <React.Fragment>
       <Modal
@@ -43,6 +80,7 @@ export default function BasicModal({
             borderRadius: "md",
             p: 3,
             boxShadow: "lg",
+            position: "relative",
           }}
         >
           <ModalClose
@@ -65,8 +103,32 @@ export default function BasicModal({
           >
             Select currency
           </Typography>
-          <List>
-            <ListItem>
+          {loading && (
+            <Box
+              sx={{
+                position: "absolute",
+                zIndex: 20,
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress sx={{}} />
+            </Box>
+          )}
+          <List sx={loading ? { "opacity:": 0 } : { opacity: 1 }}>
+            <ListItem
+              onClick={() =>
+                handleCurrencyChange({
+                  symbol: "£",
+                  currency: "GBP",
+                  title: "pound",
+                })
+              }
+            >
               <ListItemButton>
                 <ListItemDecorator>
                   <svg
@@ -93,7 +155,15 @@ export default function BasicModal({
                 </ListItemContent>
               </ListItemButton>
             </ListItem>
-            <ListItem>
+            <ListItem
+              onClick={() =>
+                handleCurrencyChange({
+                  symbol: "$",
+                  currency: "USD",
+                  title: "pound",
+                })
+              }
+            >
               <ListItemButton>
                 <ListItemDecorator>
                   <DollarSign></DollarSign>
@@ -103,7 +173,15 @@ export default function BasicModal({
                 </ListItemContent>
               </ListItemButton>
             </ListItem>
-            <ListItem>
+            <ListItem
+              onClick={() =>
+                handleCurrencyChange({
+                  symbol: "€",
+                  currency: "EUR",
+                  title: "euro",
+                })
+              }
+            >
               <ListItemButton>
                 <ListItemDecorator>
                   <svg

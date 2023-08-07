@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { styled } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import Avatar from "@mui/joy/Avatar";
@@ -16,24 +16,15 @@ import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import ColorSchemeToggle from "../utils/ColorSchemeToggle";
 import { closeSidebar } from "../utils/utils";
-import {
-  LogOut,
-  Coffee,
-  Home,
-  BarChart2,
-  Filter,
-  DollarSign,
-} from "react-feather";
+import { LogOut, Coffee, Home, BarChart2, Filter } from "react-feather";
 import { Link } from "react-router-dom";
 import Modal from "./Modal";
-
-const Dropdown = styled("i")(({ theme }) => ({
-  color: theme.vars.palette.text.tertiary,
-}));
+import { Store } from "../Store";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const { currency } = useContext(Store);
 
   return (
     <Sheet
@@ -111,28 +102,27 @@ export default function Sidebar() {
             "--List-nestedInsetStart": "40px",
           }}
         >
-          <ListItem>
-            <ListItemButton>
-              <ListItemDecorator>
-                <Home />
-              </ListItemDecorator>
-              <ListItemContent>
-                <Link to="/">Home</Link>
-              </ListItemContent>
-              <Dropdown data-feather="chevron-down" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem>
-            <ListItemButton>
-              <ListItemDecorator>
-                <BarChart2 />
-              </ListItemDecorator>
-              <ListItemContent>
-                <Link to="/profile">Profile</Link>
-              </ListItemContent>
-              <Dropdown data-feather="chevron-down" />
-            </ListItemButton>
-          </ListItem>
+          <Link to="/">
+            <ListItem>
+              <ListItemButton>
+                <ListItemDecorator>
+                  <Home />
+                </ListItemDecorator>
+                <ListItemContent>Home</ListItemContent>
+              </ListItemButton>
+            </ListItem>
+          </Link>
+          <Link to="/profile">
+            <ListItem>
+              <ListItemButton>
+                <ListItemDecorator>
+                  <BarChart2 />
+                </ListItemDecorator>
+                <ListItemContent>Profile</ListItemContent>
+              </ListItemButton>
+            </ListItem>
+          </Link>
+
           <ListItem
             nested
             sx={{ my: 1 }}
@@ -190,8 +180,8 @@ export default function Sidebar() {
         >
           <ListItem>
             <ListItemButton>
-              <ListItemDecorator>
-                <DollarSign />
+              <ListItemDecorator sx={{ fontSize: "24px" }}>
+                {currency.symbol}
               </ListItemDecorator>
               <ListItemContent>
                 <Box onClick={() => setOpenModal(true)}>Change Currency</Box>

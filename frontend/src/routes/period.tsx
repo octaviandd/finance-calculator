@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Form, Link, useLoaderData, useParams } from "react-router-dom";
 import {
   Box,
@@ -16,12 +16,13 @@ import { Plus } from "react-feather";
 import ReportTable from "../components/ReportTable";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import { serverRequest } from "../utils/utils";
+import { Store } from "../Store";
 
 export default function Period() {
   const [error, setError] = useState(false);
   const { periodId } = useParams();
-  const [currency, setCurrency] = useState("pound");
   const [period, setPeriod] = useState<MonthlyPeriod>();
+  const { currency } = useContext(Store);
 
   const getMonthlyPeriod = async () => {
     serverRequest(
@@ -135,7 +136,11 @@ export default function Period() {
                   placeholder="£999.99"
                   value={period?.start_balance}
                   startDecorator={
-                    { pound: "£", dollar: "$", euro: "€" }[currency]
+                    {
+                      pound: currency.symbol,
+                      dollar: currency.symbol,
+                      euro: currency.symbol,
+                    }[currency.title]
                   }
                   onChange={(event) =>
                     handleStartBalanceChange(event.target.value)
@@ -149,6 +154,14 @@ export default function Period() {
                 >
                   Save
                 </Button>
+                <Button
+                  variant="plain"
+                  sx={{ margin: 0, marginLeft: "6px" }}
+                  type="submit"
+                  onClick={() => saveStartBalance()}
+                >
+                  End balance from previous month
+                </Button>
               </Box>
             )}
           </FormControl>
@@ -156,7 +169,7 @@ export default function Period() {
         <Link to={`/monthly-period/${periodId}/edit`}>
           <Button variant="solid">
             <Typography fontSize="md" sx={{ mx: 1, color: "white" }}>
-              Add Transactions
+              Edit transactions
             </Typography>
             <Plus size={16} />
           </Button>
@@ -186,7 +199,7 @@ export default function Period() {
             <div className="font-medium">
               <p className="text-xl text-[#F46524]">END BALANCE</p>
               <p className="italic text-[#F46524]">
-                £
+                {currency.symbol}
                 {period?.monthly_end_balance &&
                   period.monthly_end_balance.toFixed(2)}
               </p>
@@ -195,11 +208,18 @@ export default function Period() {
         </div>
         <div className="py-10 px-20 bg-[#ECEDEF]">
           <div className="border-b border-dashed border-neutral-400 pb-5">
-            <p className="text-3xl text-center">£{0}</p>
+            <p className="text-3xl text-center">
+              {currency.symbol}
+              {0}
+            </p>
             <p className="text-center">Increase in total savings</p>
+            <p>
+              <small>Accumulated from previous months</small>
+            </p>
           </div>
           <div className="pt-6">
             <p className="text-3xl text-center">
+              {currency.symbol}
               {period?.monthly_saved_this_month &&
                 period.monthly_saved_this_month.toFixed(2)}
             </p>
@@ -217,20 +237,22 @@ export default function Period() {
       >
         {period?.expenses && (
           <Box>
-            <Typography fontSize="xl2">Expenses</Typography>
+            <Typography fontSize="xl2" sx={{ marginBottom: 4 }}>
+              Expenses
+            </Typography>
             <ReportTable
               items={period?.expenses}
-              type="expenses"
               setPlannedAmount={handleExpensePlannedAmount}
             ></ReportTable>
           </Box>
         )}
         {period?.incomes && (
           <Box>
-            <Typography fontSize="xl2">Incomes</Typography>
+            <Typography fontSize="xl2" sx={{ marginBottom: 4 }}>
+              Incomes
+            </Typography>
             <ReportTable
               items={period?.incomes}
-              type="incomes"
               setPlannedAmount={handleIncomePlannedAmount}
             ></ReportTable>
           </Box>

@@ -1,92 +1,29 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Box from "@mui/joy/Box";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
 import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import { stableSort, getComparator, serverRequest } from "../utils/utils";
 import { Order } from "../types/Order";
 import { Expense } from "../types/Expense";
 import { Income } from "../types/Income";
-import { Filters } from "./Filters";
-import { IconButton } from "@mui/joy";
-import { Category } from "../types/Category";
-import { ArrowDown, Filter, Search } from "react-feather";
+import { ArrowDown } from "react-feather";
+import { Store } from "../Store";
 
 export default function ReportTable({
   items,
   setPlannedAmount,
-  type,
 }: {
   items: Expense[] | Income[];
   setPlannedAmount: Function;
-  type: string;
 }) {
-  const [currency, setCurrency] = useState("pound");
   const [order, setOrder] = React.useState<Order>("desc");
-  const [open, setOpen] = React.useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [errors, setError] = useState(false);
-
-  useEffect(() => {
-    serverRequest(
-      "get",
-      `finance/categories`,
-      undefined,
-      (data: Category[]) => {
-        setCategories(data);
-      },
-      setError
-    );
-  }, []);
+  const { currency } = useContext(Store);
 
   return (
     <Box>
-      <Sheet
-        className="SearchAndFilters-mobile"
-        sx={{
-          display: {
-            xs: "flex",
-            sm: "none",
-          },
-          my: 1,
-          gap: 1,
-        }}
-      >
-        <IconButton
-          size="sm"
-          variant="outlined"
-          color="neutral"
-          onClick={() => setOpen(true)}
-        >
-          <Filter />
-        </IconButton>
-      </Sheet>
-      <Box
-        className="SearchAndFilters-tabletUp"
-        sx={{
-          borderRadius: "sm",
-          py: 2,
-          display: {
-            xs: "none",
-            sm: "flex",
-          },
-          flexWrap: "wrap",
-          gap: 1.5,
-          "& > *": {
-            minWidth: {
-              xs: "120px",
-              md: "160px",
-            },
-          },
-        }}
-      >
-        <Filters addRow={undefined} categories={categories} />
-      </Box>
       <Sheet
         className="OrderTableContainer"
         variant="outlined"
@@ -146,9 +83,9 @@ export default function ReportTable({
             </tr>
           </thead>
           <tbody>
-            {stableSort(items, getComparator(order, "id")).map((row) => (
+            {items.map((row) => (
               <tr key={row.id}>
-                <td style={{ textAlign: "center" }}>{row.category.title}</td>
+                <td style={{ paddingLeft: "15px" }}>{row.category.title}</td>
                 <td>
                   <Input
                     type="number"
@@ -158,7 +95,13 @@ export default function ReportTable({
                     value={row.planned_amount}
                     onChange={(e) => setPlannedAmount(row.id, e.target.value)}
                     required
-                    startDecorator={{ pound: "£" }[currency]}
+                    startDecorator={
+                      {
+                        pound: currency.symbol,
+                        dollar: currency.symbol,
+                        euro: currency.symbol,
+                      }[currency.title]
+                    }
                   />
                 </td>
                 <td>£{row.actual_amount}</td>

@@ -1,10 +1,9 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
 import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
 import Select from "@mui/joy/Select";
@@ -26,6 +25,7 @@ import {
   serverRequest,
 } from "../utils/utils";
 import dayjs from "dayjs";
+import { Store } from "../Store";
 
 export default function OrderTable({
   createRow,
@@ -40,12 +40,12 @@ export default function OrderTable({
   saveItem: Function;
   removeItem: Function;
 }) {
-  const [currency, setCurrency] = useState("pound");
   const [block, setBlock] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [order, setOrder] = useState<Order>("desc");
   const [open, setOpen] = useState(false);
   const [errors, setError] = useState(false);
+  const { currency } = useContext(Store);
 
   const addRow = () => {
     if (!block) {
@@ -132,13 +132,13 @@ export default function OrderTable({
           },
         }}
       >
-        <FormControl sx={{ flex: 1 }} size="sm">
+        {/* <FormControl sx={{ flex: 1 }} size="sm">
           <FormLabel>Search for {type}</FormLabel>
           <Input
             placeholder="Search"
             startDecorator={<i data-feather="search" />}
           />
-        </FormControl>
+        </FormControl> */}
 
         <Filters addRow={addRow} categories={categories} />
       </Box>
@@ -223,7 +223,11 @@ export default function OrderTable({
                         name="amount"
                         required
                         startDecorator={
-                          { pound: "£", dollar: "$", euro: "€" }[currency]
+                          {
+                            pound: currency.symbol,
+                            dollar: currency.symbol,
+                            euro: currency.symbol,
+                          }[currency.title]
                         }
                       />
                     ) : (
@@ -233,7 +237,11 @@ export default function OrderTable({
                         name="amount"
                         value={row.actual_amount}
                         startDecorator={
-                          { pound: "£", dollar: "$", euro: "€" }[currency]
+                          {
+                            pound: currency.symbol,
+                            dollar: currency.symbol,
+                            euro: currency.symbol,
+                          }[currency.title]
                         }
                       />
                     )}
