@@ -17,6 +17,8 @@ import Input from "@mui/joy/Input";
 import Typography from "@mui/joy/Typography";
 import SvgIcon from "@mui/joy/SvgIcon";
 import customTheme from "../theme";
+import { GitHub } from "react-feather";
+import { serverRequest } from "../utils/utils";
 
 function GoogleIcon() {
   return (
@@ -55,21 +57,16 @@ export default function LoginPage() {
     const formData = new FormData(form as HTMLFormElement);
     const formJson = Object.fromEntries(formData.entries());
 
-    try {
-      await axios
-        .post("http://127.0.0.1:8000/finance/login", formJson)
-        .then((response) => {
-          document.cookie = `token=${response.data.token}; path=/`;
-          navigate("/profile");
-        });
-    } catch (error) {
-      console.log(error);
-      const err = error as AxiosError;
-      if (axios.isAxiosError(err)) {
-        console.log(err);
-        setError(true);
-      }
-    }
+    serverRequest(
+      "post",
+      "finance/login",
+      formJson,
+      (data: { token: string }) => {
+        document.cookie = `token=${data.token}; path=/`;
+        navigate("/profile");
+      },
+      () => setError(true)
+    );
   };
   return (
     <CssVarsProvider
@@ -174,14 +171,26 @@ export default function LoginPage() {
               <Typography component="h1" fontSize="xl2" fontWeight="lg">
                 Sign in to your account
               </Typography>
-              <Typography level="body2" sx={{ my: 1, mb: 3 }}>
-                Welcome back
+              <Typography
+                component="h4"
+                fontSize="sm"
+                fontWeight="sm"
+                sx={{ textDecoration: "underline" }}
+              >
+                <RLink to="/register">Create an account</RLink>
               </Typography>
             </div>
             <form onSubmit={handleSubmit}>
+              {hasError && (
+                <FormControl>
+                  <Box sx={{ color: "#C41C1D" }}>
+                    Invalid credentials, try again.
+                  </Box>
+                </FormControl>
+              )}
               <FormControl required>
                 <FormLabel>Email</FormLabel>
-                <Input type="email" name="email" />
+                <Input type="email" name="email" autoComplete="email" />
               </FormControl>
               <FormControl required>
                 <FormLabel>Password</FormLabel>
@@ -214,6 +223,14 @@ export default function LoginPage() {
               startDecorator={<GoogleIcon />}
             >
               Sign in with Google
+            </Button>
+            <Button
+              variant="outlined"
+              color="neutral"
+              fullWidth
+              startDecorator={<GitHub />}
+            >
+              Sign in with Github
             </Button>
           </Box>
         </Box>

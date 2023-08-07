@@ -9,7 +9,7 @@ from .models import YearlyPeriod, MonthlyPeriod, Expense, Income, Category
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
+        fields = ['username', 'email', 'password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -30,8 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
         user = User(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name=validated_data.get('first_name', ""),
-            last_name=validated_data.get('last_name', "")
         )
         
         user.set_password(validated_data['password'])

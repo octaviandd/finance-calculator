@@ -24,8 +24,6 @@ def register(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = User.objects.create_user(
-            first_name=serializer.validated_data['first_name'],
-            last_name=serializer.validated_data['last_name'],
             username=serializer.validated_data['username'],
             email=serializer.validated_data['email'],
             password=serializer.validated_data['password']
@@ -61,10 +59,10 @@ def login(request):
     try:
         user = User.objects.get(email = email)
     except User.DoesNotExist:
-        raise Response({"error": "Invalid credentials"} , status = 400)
+        return Response({"error": "Invalid credentials"} , status = 400)
 
     if not user.check_password(password):
-        raise Response({"error": "Invalid credentials"} , status = 400)
+        return Response({"error": "Invalid credentials"} , status = 400)
 
     token, _ = Token.objects.get_or_create(user = user)
     return Response({'token' : token.key}, status = 200)

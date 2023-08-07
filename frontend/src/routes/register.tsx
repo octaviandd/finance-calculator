@@ -1,10 +1,52 @@
 /** @format */
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RLink, useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import { serverRequest } from "../utils/utils";
 import { GitHub } from "react-feather";
+import {
+  Box,
+  Button,
+  Checkbox,
+  CssBaseline,
+  CssVarsProvider,
+  FormControl,
+  FormLabel,
+  GlobalStyles,
+  Input,
+  Typography,
+  formLabelClasses,
+  Link,
+  SvgIcon,
+} from "@mui/joy";
+import ColorSchemeToggle from "../utils/ColorSchemeToggle";
+import customTheme from "../theme";
+
+function GoogleIcon() {
+  return (
+    <SvgIcon fontSize="xl">
+      <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
+        <path
+          fill="#4285F4"
+          d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"
+        />
+        <path
+          fill="#34A853"
+          d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"
+        />
+        <path
+          fill="#FBBC05"
+          d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"
+        />
+        <path
+          fill="#EA4335"
+          d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"
+        />
+      </g>
+    </SvgIcon>
+  );
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -44,7 +86,7 @@ export default function RegisterPage() {
     const formJson = Object.fromEntries(formData.entries());
 
     serverRequest(
-      "POST",
+      "post",
       "finance/register",
       formJson,
       () => navigate("/login"),
@@ -53,203 +95,211 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-          alt="Your Company"
-        />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Create an account
-        </h2>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onSubmit={(e) => handleSubmit(e)}>
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm gap-x-2 flex items-center justify-between">
-            <div className="w-full">
-              <label
-                htmlFor="first_name"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                First Name
-              </label>
-              <div className="mt-2">
-                <input
-                  id="first_name"
-                  name="first_name"
-                  type="text"
-                  autoComplete="first_name"
-                  required
-                  className="block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    <CssVarsProvider
+      defaultMode="dark"
+      disableTransitionOnChange
+      theme={customTheme}
+    >
+      <CssBaseline />
+      <GlobalStyles
+        styles={{
+          ":root": {
+            "--Collapsed-breakpoint": "769px", // form will stretch when viewport is below `769px`
+            "--Cover-width": "40vw", // must be `vw` only
+            "--Form-maxWidth": "700px",
+            "--Transition-duration": "0.4s", // set to `none` to disable transition
+          },
+        }}
+      />
+      <Box
+        sx={(theme) => ({
+          width:
+            "clamp(100vw - var(--Cover-width), (var(--Collapsed-breakpoint) - 100vw) * 999, 100vw)",
+          transition: "width var(--Transition-duration)",
+          transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          justifyContent: "flex-end",
+          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(255 255 255 / 0.6)",
+          [theme.getColorSchemeSelector("dark")]: {
+            backgroundColor: "rgba(19 19 24 / 0.4)",
+          },
+        })}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100dvh",
+            width:
+              "clamp(var(--Form-maxWidth), (var(--Collapsed-breakpoint) - 100vw) * 999, 100%)",
+            maxWidth: "100%",
+            px: 2,
+          }}
+        >
+          <Box
+            component="header"
+            sx={{
+              py: 3,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography
+              fontWeight="lg"
+              startDecorator={
+                <Box
+                  component="span"
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    background: (theme) =>
+                      `linear-gradient(45deg, ${theme.vars.palette.primary.solidBg}, ${theme.vars.palette.primary.solidBg} 30%, ${theme.vars.palette.primary.softBg})`,
+                    borderRadius: "50%",
+                    boxShadow: (theme) => theme.shadow.md,
+                    "--joy-shadowChannel": (theme) =>
+                      theme.vars.palette.primary.mainChannel,
+                  }}
                 />
-              </div>
-            </div>
-
-            <div className="w-full">
-              <label
-                htmlFor="last_name"
-                className="block text-sm font-medium leading-6 text-gray-900"
+              }
+            >
+              Finance Tracker
+            </Typography>
+            <ColorSchemeToggle />
+          </Box>
+          <Box
+            component="main"
+            sx={{
+              my: "auto",
+              py: 2,
+              pb: 5,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              width: 400,
+              maxWidth: "100%",
+              mx: "auto",
+              borderRadius: "sm",
+              "& form": {
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              },
+              [`& .${formLabelClasses.asterisk}`]: {
+                visibility: "hidden",
+              },
+            }}
+          >
+            <div>
+              <Typography component="h1" fontSize="xl2" fontWeight="lg">
+                Register your account
+              </Typography>
+              <Typography
+                component="h4"
+                fontSize="sm"
+                fontWeight="sm"
+                sx={{ textDecoration: "underline" }}
               >
-                Last Name
-              </label>
-              <div className="mt-2">
-                <input
-                  id="last_name"
-                  name="last_name"
+                <RLink to="/login">Already have an account?</RLink>
+              </Typography>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <FormControl required>
+                <FormLabel>Username</FormLabel>
+                <Input
                   type="text"
-                  autoComplete="last_name"
+                  name="username"
+                  autoComplete="username"
                   required
-                  className="block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Username
-            </label>
-            <div className="mt-2">
-              <input
-                id="username"
-                name="username"
-                type="username"
-                autoComplete="username"
-                required
-                className={
-                  errors.username.length < 1
-                    ? "block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    : "block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset ring-red-600 sm:text-sm sm:leading-6"
-                }
-              />
-            </div>
-            {errors.username &&
-              errors.username.map((error) => (
-                <span key={error} className="text-sm mt-2 ml-1 text-red-500">
-                  {error}
-                </span>
-              ))}
-          </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className={
-                  errors.email.length < 1
-                    ? "block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    : "block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset ring-red-600 sm:text-sm sm:leading-6"
-                }
-              />
-            </div>
-            {errors.email &&
-              errors.email.map((error) => (
-                <span key={error} className="text-sm mt-2 ml-1 text-red-500">
-                  {error}
-                </span>
-              ))}
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
+                {errors?.username && (
+                  <Box sx={{ color: "#C41C1D" }}>{errors.username}</Box>
+                )}
+              </FormControl>
+              <FormControl required>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  required
+                />
+                {errors?.email && (
+                  <Box sx={{ color: "#C41C1D" }}>{errors.email}</Box>
+                )}
+              </FormControl>
+              <FormControl required>
+                <FormLabel>Password</FormLabel>
+                <Input type="password" name="password" required />
+                {errors?.password && (
+                  <Box sx={{ color: "#C41C1D" }}>{errors.password}</Box>
+                )}
+              </FormControl>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                Password
-              </label>
-            </div>
-            <div className="mt-2">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className={
-                  errors.password.length < 1
-                    ? "block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    : "block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset ring-red-600 sm:text-sm sm:leading-6"
-                }
-              />
-            </div>
-            {errors.password &&
-              errors.password.map((error) => (
-                <span key={error} className="text-sm mt-2 ml-1 text-red-500">
-                  {error}
-                </span>
-              ))}
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="flex w-full justify-center rounded-md dark:bg-gray-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+                <Checkbox
+                  size="sm"
+                  label="Remember for 30 days"
+                  name="persistent"
+                />
+                <Link fontSize="sm" href="#replace-with-a-link" fontWeight="lg">
+                  Forgot your password?
+                </Link>
+              </Box>
+              <Button type="submit" fullWidth>
+                Register
+              </Button>
+            </form>
+            <Button
+              variant="outlined"
+              color="neutral"
+              fullWidth
+              startDecorator={<GoogleIcon />}
             >
-              Register
-            </button>
-          </div>
-        </form>
-
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Already a member?
-          <Link
-            to="/login"
-            className="font-semibold leading-6 dark:text-gray-800 hover:text-gray-500 ml-1"
-          >
-            Login here
-          </Link>
-        </p>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm flex items-center justify-between">
-        <span className="h-[0.5px] w-full bg-black"></span>
-        <span className="w-full px-3 whitespace-nowrap text-zinc-400">
-          Or continue with
-        </span>
-        <span className="h-[0.5px] w-full bg-black"></span>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm flex gap-x-4 items-center justify-between">
-        <a href="" className="w-full">
-          <button
-            type="button"
-            className="flex w-full justify-center pr-3 items-center rounded-sm bg-[#3F7DE7] pl-1 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            <img
-              className="bg-white mr-3"
-              height="22"
-              width="22"
-              src="https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA"
-            />
-            <span>Google</span>
-          </button>
-        </a>
-        <a href="" className="w-full">
-          <button
-            type="button"
-            className="flex w-full items-center justify-center rounded-sm bg-[#24292E] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            <GitHub width={22} height={22} />
-            <span>GitHub</span>
-          </button>
-        </a>
-      </div>
-    </div>
+              Sign in with Google
+            </Button>
+            <Button
+              variant="outlined"
+              color="neutral"
+              fullWidth
+              startDecorator={<GitHub />}
+            >
+              Sign in with Github
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        sx={(theme) => ({
+          height: "100%",
+          position: "fixed",
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: "clamp(0px, (100vw - var(--Collapsed-breakpoint)) * 999, 100vw - var(--Cover-width))",
+          transition:
+            "background-image var(--Transition-duration), left var(--Transition-duration) !important",
+          transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
+          backgroundColor: "background.level1",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&w=1000&dpr=2)",
+          [theme.getColorSchemeSelector("dark")]: {
+            backgroundImage:
+              "url(https://images.unsplash.com/photo-1572072393749-3ca9c8ea0831?auto=format&w=1000&dpr=2)",
+          },
+        })}
+      />
+    </CssVarsProvider>
   );
 }

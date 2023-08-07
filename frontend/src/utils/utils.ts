@@ -105,7 +105,6 @@ export const serverRequest = async (
       data,
       headers: { Authorization: `Token ${token}` },
     }).then((response) => {
-      console.log(response.data);
       callback(response.data);
     });
   } catch (error) {

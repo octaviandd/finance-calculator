@@ -56,7 +56,6 @@ export default function Period() {
   };
 
   useEffect(() => {
-    console.log(period);
     getMonthlyPeriod();
   }, []);
 
@@ -82,24 +81,26 @@ export default function Period() {
           </Typography>
           <FormControl size="sm">
             <FormLabel>Start balance:</FormLabel>
-            <Box sx={{ display: "flex" }}>
-              <Input
-                type="number"
-                placeholder="£999.99"
-                value={period?.start_balance}
-                onChange={(event) =>
-                  handleStartBalanceChange(event.target.value)
-                }
-              ></Input>
-              <Button
-                variant="plain"
-                sx={{ margin: 0, marginLeft: "6px" }}
-                type="submit"
-                onClick={() => saveStartBalance()}
-              >
-                Save
-              </Button>
-            </Box>
+            {period && (
+              <Box sx={{ display: "flex" }}>
+                <Input
+                  type="number"
+                  placeholder="£999.99"
+                  value={period?.start_balance}
+                  onChange={(event) =>
+                    handleStartBalanceChange(event.target.value)
+                  }
+                ></Input>
+                <Button
+                  variant="plain"
+                  sx={{ margin: 0, marginLeft: "6px" }}
+                  type="submit"
+                  onClick={() => saveStartBalance()}
+                >
+                  Save
+                </Button>
+              </Box>
+            )}
           </FormControl>
         </Box>
         <Link to={`/monthly-period/${periodId}/edit`}>

@@ -18,7 +18,6 @@ export default function ErrorPage({}: Props) {
     errorMessage = error;
   } else {
     console.error(error);
-    console.log("Unknown error");
   }
 
   return (
