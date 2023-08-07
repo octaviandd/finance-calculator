@@ -133,7 +133,12 @@ export default function Period() {
               <Box sx={{ display: "flex" }}>
                 <Input
                   type="number"
-                  placeholder="£999.99"
+                  placeholder="999.99"
+                  slotProps={{
+                    input: {
+                      step: 1,
+                    },
+                  }}
                   value={period?.start_balance}
                   startDecorator={
                     {

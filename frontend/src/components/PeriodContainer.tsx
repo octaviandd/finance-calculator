@@ -9,8 +9,11 @@ import { Maximize } from "react-feather";
 import { Box } from "@mui/joy";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import dayjs from "dayjs";
+import { Store } from "../Store";
+import { useContext } from "react";
 
 export default function BasicCard({ period }: { period: MonthlyPeriod }) {
+  const { currency } = useContext(Store);
   return (
     <Card variant="outlined" sx={{ width: 370 }}>
       <div>
@@ -27,13 +30,15 @@ export default function BasicCard({ period }: { period: MonthlyPeriod }) {
         <div>
           <Typography level="body3">Income:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="success">
-            £{period.monthly_total_actual_incomes}
+            {currency.symbol}
+            {(period.monthly_total_actual_incomes * currency.rate).toFixed(2)}
           </Typography>
         </div>
         <div>
           <Typography level="body3">Expenses:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="danger">
-            £{period.monthly_total_actual_expenses}
+            {currency.symbol}
+            {(period.monthly_total_actual_expenses * currency.rate).toFixed(2)}
           </Typography>
         </div>
 

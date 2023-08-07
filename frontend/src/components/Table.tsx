@@ -235,7 +235,9 @@ export default function OrderTable({
                         type="number"
                         id="amount"
                         name="amount"
-                        value={row.actual_amount}
+                        value={parseFloat(
+                          (row.actual_amount * currency.rate).toFixed(2)
+                        )}
                         startDecorator={
                           {
                             pound: currency.symbol,

@@ -218,10 +218,8 @@ def get_categories(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_currency_exchange(request):
-    currency = request.data.get('currency')
     client = freecurrencyapi.Client(os.getenv('FREE_CURRENCY_API'))
-
-    result = client.latest(base_currency=currency, currencies=['EUR', 'USD', 'GBP'])
+    result = client.latest(base_currency="GBP", currencies=['EUR', 'USD'])
 
     return Response(result, status = 200)
 
