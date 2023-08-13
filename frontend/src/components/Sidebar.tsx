@@ -148,7 +148,7 @@ export default function Sidebar() {
               >
                 Quick Filters
               </Typography>
-              <Typography component="span" level="body3" sx={{ ml: 1 }}>
+              <Typography component="span" level="body-sm" sx={{ ml: 1 }}>
                 4
               </Typography>
             </ListItem>
@@ -214,7 +214,7 @@ export default function Sidebar() {
           <Typography fontSize="sm" fontWeight="lg">
             Octavian D.
           </Typography>
-          <Typography level="body3">octaviandd@yahoo.com</Typography>
+          <Typography level="body-sm">octaviandd@yahoo.com</Typography>
         </Box>
         <IconButton variant="plain" color="neutral">
           <i data-feather="log-out" />

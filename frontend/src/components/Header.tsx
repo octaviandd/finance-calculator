@@ -6,6 +6,7 @@ import IconButton from "@mui/joy/IconButton";
 import Sheet from "@mui/joy/Sheet";
 import ColorSchemeToggle from "../utils/ColorSchemeToggle";
 import { toggleSidebar } from "../utils/utils";
+import { Menu } from "react-feather";
 
 export default function Header() {
   return (
@@ -40,7 +41,7 @@ export default function Header() {
         color="neutral"
         size="sm"
       >
-        <i data-feather="menu" />
+        <Menu />
       </IconButton>
       <ColorSchemeToggle id={undefined} />
     </Sheet>

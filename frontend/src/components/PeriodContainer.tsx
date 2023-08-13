@@ -20,7 +20,7 @@ export default function BasicCard({ period }: { period: MonthlyPeriod }) {
         <Typography level="h2" fontSize="md" sx={{ mb: 0.5 }}>
           {period.title}
         </Typography>
-        <Typography level="body2">
+        <Typography level="body-sm">
           {dayjs(period.from_date).format("MMMM DD")} to{" "}
           {dayjs(period.to_date).format("MMMM DD")},{" "}
           {dayjs(period.to_date).format("YYYY")}
@@ -28,14 +28,14 @@ export default function BasicCard({ period }: { period: MonthlyPeriod }) {
       </div>
       <CardContent orientation="horizontal">
         <div>
-          <Typography level="body3">Income:</Typography>
+          <Typography level="body-sm">Income:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="success">
             {currency.symbol}
             {(period.monthly_total_actual_incomes * currency.rate).toFixed(2)}
           </Typography>
         </div>
         <div>
-          <Typography level="body3">Expenses:</Typography>
+          <Typography level="body-sm">Expenses:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="danger">
             {currency.symbol}
             {(period.monthly_total_actual_expenses * currency.rate).toFixed(2)}

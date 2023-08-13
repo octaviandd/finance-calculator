@@ -1,9 +1,10 @@
 /** @format */
 
 import React, { ReactNode, createContext, useState } from "react";
+import { Currency } from "./types/Currency";
 
 export const Store = createContext<{
-  currency: { title: string; symbol: string; rate: number; currency: string };
+  currency: Currency;
   setCurrency: Function;
 }>({
   currency: {

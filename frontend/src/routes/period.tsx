@@ -195,7 +195,8 @@ export default function Period() {
             <div className="font-medium">
               <p className="text-xl text-[#334960]">START BALANCE</p>
               <p className="text-right text-[#334960] italic">
-                £{period?.start_balance && period.start_balance.toFixed(2)}
+                {currency.symbol}
+                {period?.start_balance && period.start_balance.toFixed(2)}
               </p>
             </div>
           </div>

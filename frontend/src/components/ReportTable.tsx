@@ -92,7 +92,13 @@ export default function ReportTable({
                     id="amount"
                     name="amount"
                     variant="plain"
-                    value={row.planned_amount}
+                    slotProps={{
+                      input: {
+                        precision: 2,
+                        step: 0.01,
+                      },
+                    }}
+                    value={Number(row.planned_amount).toFixed(2)}
                     onChange={(e) => setPlannedAmount(row.id, e.target.value)}
                     required
                     startDecorator={
@@ -104,9 +110,15 @@ export default function ReportTable({
                     }
                   />
                 </td>
-                <td>£{row.actual_amount}</td>
+                <td>
+                  {currency.symbol}
+                  {row.actual_amount.toFixed(2)}
+                </td>
                 <td style={{ textAlign: "right", paddingRight: "50px" }}>
-                  £{Number(row.planned_amount) - Number(row.actual_amount)}
+                  £
+                  {(
+                    Number(row.planned_amount) - Number(row.actual_amount)
+                  ).toFixed(2)}
                 </td>
               </tr>
             ))}
