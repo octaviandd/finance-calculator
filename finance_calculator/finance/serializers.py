@@ -3,13 +3,13 @@ from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from .models import Period, Expense, Income, Category
+from .models import YearlyPeriod, MonthlyPeriod, Expense, Income, Category
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
+        fields = ['username', 'email', 'password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -30,8 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
         user = User(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name=validated_data.get('first_name', ""),
-            last_name=validated_data.get('last_name', "")
         )
         
         user.set_password(validated_data['password'])
@@ -41,27 +39,62 @@ class UserSerializer(serializers.ModelSerializer):
     
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model: Category
-        fields = ['id', 'title', 'description']
+        model = Category
+        fields = ['id', 'title']
 
 class IncomeSerializer(serializers.ModelSerializer): 
-    categories = CategorySerializer(many = True, read_only = True)
+    category = CategorySerializer(many = False, read_only = True)
     class Meta:
         model = Income
-        fields = ['id', 'title', 'description', 'planned_amount', 'actual_amount', 'categories', 'created_at', 'updated_at', 'user']
+        fields = ['id', 'title', 'planned_amount', 'actual_amount', 'category', 'date']
 
 class ExpenseSerializer(serializers.ModelSerializer): 
-    categories = CategorySerializer(many = True, read_only = True)
+    category = CategorySerializer(many = False, read_only = True)
     class Meta:
         model = Expense
-        fields = ['id', 'title', 'description', 'planned_amount', 'actual_amount', 'categories', 'created_at', 'updated_at', 'user']
+        fields = ['id', 'title', 'planned_amount', 'actual_amount', 'category', 'date']
     
 
-class PeriodSerializer(serializers.ModelSerializer): 
+class MonthlyPeriodSerializer(serializers.ModelSerializer):
     incomes = IncomeSerializer(many=True, read_only=True)
     expenses = ExpenseSerializer(many=True, read_only=True)
 
+    monthly_total_planned_incomes = serializers.SerializerMethodField()
+    monthly_total_planned_expenses = serializers.SerializerMethodField()
+    monthly_total_actual_incomes = serializers.SerializerMethodField()
+    monthly_total_actual_expenses = serializers.SerializerMethodField()
+    monthly_saved_this_month = serializers.SerializerMethodField()
+    monthly_end_balance = serializers.SerializerMethodField()
     class Meta:
-        model = Period
-        fields = ['id', 'title', 'total_spend', 'total_income', 'total_savings', 'total_saved_this_period', 'start_balance', 'end_balance', 'incomes', 'expenses']
+        model = MonthlyPeriod
+        fields = ['id', 'title', 'from_date', 'to_date', 'incomes', 'expenses', 'total_spend', 'start_balance',
+                  'monthly_total_planned_incomes', 'monthly_total_actual_incomes', 
+                  'monthly_total_actual_expenses', 'monthly_total_planned_expenses',
+                  'monthly_saved_this_month', 'monthly_end_balance']
+
+    def get_monthly_total_planned_incomes(self, obj):
+        return obj.monthly_total_planned_incomes()
+    
+    def get_monthly_total_planned_expenses(self, obj):
+        return obj.monthly_total_planned_expenses()
+    
+    def get_monthly_total_actual_incomes(self, obj):
+        return obj.monthly_total_actual_incomes()
+    
+    def get_monthly_total_actual_expenses(self, obj):
+        return obj.monthly_total_actual_expenses()
+    
+    def get_monthly_saved_this_month(self, obj):
+        return obj.monthly_saved_this_month()
+    
+    def get_monthly_end_balance(self, obj):
+        return obj.monthly_end_balance()
+
+
+class YearlyPeriodSerializer(serializers.ModelSerializer): 
+    monthly_periods = MonthlyPeriodSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = YearlyPeriod
+        fields = ['id', 'title', 'monthly_periods']
 
