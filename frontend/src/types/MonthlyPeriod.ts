@@ -1,7 +1,6 @@
 /** @format */
 
-import { Expense } from "./Expense";
-import { Income } from "./Income";
+import { Category } from "./Category";
 export type MonthlyPeriod = {
   id: number | string;
   title: string;
@@ -11,10 +10,10 @@ export type MonthlyPeriod = {
   start_balance: number;
   monthly_end_balance: number;
   monthly_saved_this_month: number;
-  monthly_total_actual_expenses: number;
-  monthly_total_actual_incomes: number;
-  monthly_total_planned_expenses: number;
-  monthly_total_planned_incomes: number;
-  incomes: Income[];
-  expenses: Expense[];
+  monthly_total_actual_expenses_amount: number;
+  monthly_total_actual_incomes_amount: number;
+  monthly_total_planned_expenses_amount: number;
+  monthly_total_planned_incomes_amount: number;
+  income_categories: Category[];
+  expense_categories: Category[];
 };

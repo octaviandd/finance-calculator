@@ -7,7 +7,6 @@ import Table from "../components/Table";
 import { Expense } from "../types/Expense";
 import { Income } from "../types/Income";
 import { serverRequest } from "../utils/utils";
-import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import { ArrowLeft, PlusCircle } from "react-feather";
 import CategoryModal from "../components/CategoryModal";
 import { Category } from "../types/Category";
@@ -71,19 +70,6 @@ export default function PeriodEdit() {
     );
   };
 
-  useEffect(() => {
-    serverRequest(
-      "get",
-      `finance/monthly-period/${periodId}/edit`,
-      undefined,
-      (data: MonthlyPeriod) => {
-        setExpenses(data.expenses);
-        setIncomes(data.incomes);
-      },
-      setError
-    );
-  }, []);
-
   const createCategory = (title: string) => {
     serverRequest(
       "post",
@@ -95,18 +81,6 @@ export default function PeriodEdit() {
       setError
     );
   };
-
-  useEffect(() => {
-    serverRequest(
-      "get",
-      `finance/categories`,
-      undefined,
-      (data: Category[]) => {
-        setCategories(data);
-      },
-      setError
-    );
-  }, []);
 
   return (
     <Sheet
@@ -156,7 +130,6 @@ export default function PeriodEdit() {
           <Typography fontSize="xl2" sx={{ marginBottom: 2 }}>
             Expenses
           </Typography>
-          {expenses.length > 1 && categories.length > 1}
           <Table
             createRow={createRow}
             type="expense"
@@ -170,7 +143,6 @@ export default function PeriodEdit() {
           <Typography fontSize="xl2" sx={{ marginBottom: 2 }}>
             Income
           </Typography>
-          {incomes.length > 1 && categories.length > 1}
           <Table
             createRow={createRow}
             type="income"

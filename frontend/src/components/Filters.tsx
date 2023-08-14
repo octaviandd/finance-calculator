@@ -6,19 +6,23 @@ import React from "react";
 import { PlusCircle } from "react-feather";
 
 type Props = {
-  addRow: Function | undefined;
+  addRow: Function;
 };
 
 export const Filters = ({ addRow }: Props) => {
   return (
     <React.Fragment>
-      <FormControl size="sm" sx={{ marginLeft: "auto" }}>
+      <FormControl
+        size="sm"
+        sx={{ marginLeft: "auto" }}
+        onClick={() => addRow()}
+      >
         {addRow && (
           <Button variant="soft" sx={{ marginTop: "auto" }}>
             <Typography sx={{ marginRight: 1 }} level="title-sm">
               Add Row
             </Typography>
-            <PlusCircle onClick={() => addRow()}></PlusCircle>
+            <PlusCircle></PlusCircle>
           </Button>
         )}
       </FormControl>

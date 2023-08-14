@@ -31,14 +31,18 @@ export default function BasicCard({ period }: { period: MonthlyPeriod }) {
           <Typography level="body-sm">Income:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="success">
             {currency.symbol}
-            {(period.monthly_total_actual_incomes * currency.rate).toFixed(2)}
+            {(
+              period.monthly_total_actual_incomes_amount * currency.rate
+            ).toFixed(2)}
           </Typography>
         </div>
         <div>
           <Typography level="body-sm">Expenses:</Typography>
           <Typography fontSize="lg" fontWeight="lg" color="danger">
             {currency.symbol}
-            {(period.monthly_total_actual_expenses * currency.rate).toFixed(2)}
+            {(
+              period.monthly_total_actual_expenses_amount * currency.rate
+            ).toFixed(2)}
           </Typography>
         </div>
 

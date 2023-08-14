@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Form, Link, useLoaderData, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -13,16 +13,41 @@ import {
   Typography,
 } from "@mui/joy";
 import { Plus } from "react-feather";
-import ReportTable from "../components/ReportTable";
+import CategoryTable from "../components/CategoryTable";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import { serverRequest } from "../utils/utils";
 import { Store } from "../Store";
+import { Category } from "../types/Category";
+import AmountSelector from "../components/AmountSelector";
+import ReportDisplay from "../components/ReportDisplay";
 
 export default function Period() {
   const [error, setError] = useState(false);
   const { periodId } = useParams();
   const [period, setPeriod] = useState<MonthlyPeriod>();
   const { currency } = useContext(Store);
+  const [expensesCategories, setExpensesCategories] = useState<Category[]>([]);
+  const [incomesCategories, setIncomesCategories] = useState<Category[]>([]);
+
+  const addExpenseCategory = (category: Category) => {
+    setPeriod((prevState) => {
+      if (prevState) {
+        let newExpenses = [...prevState.expense_categories, category];
+        return { ...prevState, expense_categories: newExpenses };
+      }
+    });
+  };
+  const addIncomeCategory = (category: Category) => {
+    setPeriod((prevState) => {
+      if (prevState) {
+        let newExpenses = [...prevState.income_categories, category];
+        return { ...prevState, income_categories: newExpenses };
+      }
+    });
+  };
+
+  const createRow = (item: any, type: any) =>
+    type === "expense" ? addExpenseCategory(item) : addIncomeCategory(item);
 
   const getMonthlyPeriod = async () => {
     serverRequest(
@@ -34,35 +59,28 @@ export default function Period() {
     );
   };
 
-  const handleStartBalanceChange = (value: string) => {
-    if (period) {
-      setPeriod((prevState) => {
-        if (prevState) {
-          return {
-            ...prevState,
-            start_balance: parseFloat(value),
-          };
-        }
-      });
-    }
-  };
+  const handleStartBalanceChange = (value: string) =>
+    setPeriod(
+      (prevState) =>
+        prevState && { ...prevState, start_balance: parseFloat(value) }
+    );
 
-  const handleExpensePlannedAmount = (id: string, value: string) => {
+  const handleIncomeCategoryPlannedAmount = (id: string, value: string) => {
     if (period) {
       setPeriod((prevState) => {
         if (prevState) {
-          let toModifyExpenseIndex = prevState.expenses.findIndex(
-            (expense) => expense.id == id
+          let toModifyCategoryIndex = prevState.income_categories.findIndex(
+            (category) => category.id == id
           );
-          let newExpenses = [...prevState.expenses];
-          newExpenses[toModifyExpenseIndex].planned_amount = value;
-          return { ...prevState, expenses: newExpenses };
+          let newIncomes = [...prevState.income_categories];
+          newIncomes[toModifyCategoryIndex].planned_amount = Number(value);
+          return { ...prevState, income_categories: newIncomes };
         }
       });
 
       serverRequest(
         "post",
-        `finance/expense/${id}/update-planned-amount`,
+        `finance/category/${id}/update-planned-amount`,
         { amount: parseFloat(value) },
         (data: string) => console.log(data),
         setError
@@ -70,27 +88,82 @@ export default function Period() {
     }
   };
 
-  const handleIncomePlannedAmount = (id: string, value: string) => {
+  const handleExpenseCategoryPlannedAmount = (id: string, value: string) => {
     if (period) {
       setPeriod((prevState) => {
         if (prevState) {
-          let toModifyIncomeIndex = prevState.incomes.findIndex(
-            (income) => income.id == id
+          let toModifyCategoryIndex = prevState.expense_categories.findIndex(
+            (category) => category.id == id
           );
-          let newIncomes = [...prevState.incomes];
-          newIncomes[toModifyIncomeIndex].planned_amount = value;
-          return { ...prevState, incomes: newIncomes };
+          let newIncomes = [...prevState.expense_categories];
+          newIncomes[toModifyCategoryIndex].planned_amount = Number(value);
+          return { ...prevState, expense_categories: newIncomes };
         }
       });
 
       serverRequest(
         "post",
-        `finance/income/${id}/update-planned-amount`,
+        `finance/category/${id}/update-planned-amount`,
         { amount: parseFloat(value) },
         (data: string) => console.log(data),
         setError
       );
     }
+  };
+
+  const saveIncomeCategory = async (category: Category) => {
+    serverRequest(
+      "post",
+      `finance/monthly-period/${periodId}/save-income`,
+      { type: category, periodId },
+      (data: Category) =>
+        setPeriod(
+          (prevState) =>
+            prevState && {
+              ...prevState,
+              income_categories: [...prevState.income_categories, data],
+            }
+        ),
+      setError
+    );
+  };
+
+  const saveExpenseCategory = async (category: Category) => {
+    serverRequest(
+      "post",
+      `finance/monthly-period/${periodId}/save-expense`,
+      { type: category, periodId },
+      (data: Category) =>
+        setPeriod((prevState) => {
+          if (prevState) {
+            let newExpenses = [...prevState.expense_categories, data];
+            return { ...prevState, expense_categories: newExpenses };
+          }
+        }),
+      setError
+    );
+  };
+
+  const removeExpenseCategory = async (expenseId: string) => {
+    serverRequest(
+      "post",
+      `finance/monthly-period/${periodId}/save-income`,
+      expenseId,
+      (data: Category) =>
+        setExpensesCategories((prevState) => [...prevState, data]),
+      setError
+    );
+  };
+
+  const removeIncomeCategory = async (incomeId: string) => {
+    serverRequest(
+      "post",
+      `finance/monthly-period/${periodId}/save-income`,
+      incomeId,
+      (data: Category) =>
+        setIncomesCategories((prevState) => [...prevState, data]),
+      setError
+    );
   };
 
   const saveStartBalance = () => {
@@ -131,26 +204,17 @@ export default function Period() {
             <FormLabel>Start balance:</FormLabel>
             {period && (
               <Box sx={{ display: "flex" }}>
-                <Input
-                  type="number"
+                <AmountSelector
+                  slotProps={{ input: { step: 1 } }}
+                  currency={currency}
                   placeholder="999.99"
-                  slotProps={{
-                    input: {
-                      step: 1,
-                    },
-                  }}
-                  value={period?.start_balance}
-                  startDecorator={
-                    {
-                      pound: currency.symbol,
-                      dollar: currency.symbol,
-                      euro: currency.symbol,
-                    }[currency.title]
-                  }
-                  onChange={(event) =>
-                    handleStartBalanceChange(event.target.value)
-                  }
-                ></Input>
+                  onChange={handleStartBalanceChange}
+                  amount={period?.start_balance}
+                  variant="plain"
+                  id="amount"
+                  name="amount"
+                  required={true}
+                />
                 <Button
                   variant="plain"
                   sx={{ margin: 0, marginLeft: "6px" }}
@@ -181,58 +245,7 @@ export default function Period() {
         </Link>
       </Box>
 
-      <Stack
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-        spacing={12}
-        marginBottom="8rem"
-        marginTop="8rem"
-      >
-        <div className="max-w-[400px] gap-x-4 flex items-center">
-          <div>
-            <div className="bg-[#334960] max-h-[400px] h-[200px] w-[70px] ml-auto"></div>
-            <div className="font-medium">
-              <p className="text-xl text-[#334960]">START BALANCE</p>
-              <p className="text-right text-[#334960] italic">
-                {currency.symbol}
-                {period?.start_balance && period.start_balance.toFixed(2)}
-              </p>
-            </div>
-          </div>
-          <div>
-            <div className="bg-[#F46524] max-h-[400px] h-[200px] w-[70px] mr-auto"></div>
-            <div className="font-medium">
-              <p className="text-xl text-[#F46524]">END BALANCE</p>
-              <p className="italic text-[#F46524]">
-                {currency.symbol}
-                {period?.monthly_end_balance &&
-                  period.monthly_end_balance.toFixed(2)}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="py-10 px-20 bg-[#ECEDEF]">
-          <div className="border-b border-dashed border-neutral-400 pb-5">
-            <p className="text-3xl text-center">
-              {currency.symbol}
-              {0}
-            </p>
-            <p className="text-center">Increase in total savings</p>
-            <p>
-              <small>Accumulated from previous months</small>
-            </p>
-          </div>
-          <div className="pt-6">
-            <p className="text-3xl text-center">
-              {currency.symbol}
-              {period?.monthly_saved_this_month &&
-                period.monthly_saved_this_month.toFixed(2)}
-            </p>
-            <p className="text-center">Saved this month</p>
-          </div>
-        </div>
-      </Stack>
+      {period && <ReportDisplay currency={currency} period={period} />}
 
       <Box
         sx={{
@@ -241,28 +254,32 @@ export default function Period() {
           gap: "10px",
         }}
       >
-        {period?.expenses && (
-          <Box>
-            <Typography fontSize="xl2" sx={{ marginBottom: 4 }}>
-              Expenses
-            </Typography>
-            <ReportTable
-              items={period?.expenses}
-              setPlannedAmount={handleExpensePlannedAmount}
-            ></ReportTable>
-          </Box>
-        )}
-        {period?.incomes && (
-          <Box>
-            <Typography fontSize="xl2" sx={{ marginBottom: 4 }}>
-              Incomes
-            </Typography>
-            <ReportTable
-              items={period?.incomes}
-              setPlannedAmount={handleIncomePlannedAmount}
-            ></ReportTable>
-          </Box>
-        )}
+        <Box>
+          <Typography fontSize="xl2" sx={{ marginBottom: 4 }}>
+            Expenses
+          </Typography>
+          <CategoryTable
+            items={period?.expense_categories as Category[]}
+            setPlannedAmount={handleExpenseCategoryPlannedAmount}
+            createRow={createRow}
+            saveItem={saveExpenseCategory}
+            removeItem={removeExpenseCategory}
+            type="expense"
+          ></CategoryTable>
+        </Box>
+        <Box>
+          <Typography fontSize="xl2" sx={{ marginBottom: 4 }}>
+            Incomes
+          </Typography>
+          <CategoryTable
+            items={period?.income_categories as Category[]}
+            setPlannedAmount={handleIncomeCategoryPlannedAmount}
+            createRow={createRow}
+            saveItem={saveIncomeCategory}
+            removeItem={removeIncomeCategory}
+            type="income"
+          ></CategoryTable>
+        </Box>
       </Box>
     </Sheet>
   );

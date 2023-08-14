@@ -2,47 +2,50 @@
 
 import { Input } from "@mui/joy";
 import React from "react";
-import { Income } from "../types/Income";
-import { Expense } from "../types/Expense";
 import { Currency } from "../types/Currency";
 
 type Props = {
-  row: Income | Expense;
+  amount?: number;
   currency: Currency;
+  onChange?: Function;
+  placeholder?: string;
+  slotProps?: object;
+  id: string;
+  name: string;
+  required: boolean;
+  variant: any;
 };
 
-export default function AmountSelector({ row, currency }: Props) {
+export default function AmountSelector({
+  amount,
+  currency,
+  placeholder,
+  onChange,
+  slotProps,
+  id,
+  name,
+  required,
+  variant,
+}: Props) {
+  const handleChange = onChange ? onChange : () => {};
   return (
-    <>
-      {row.status === "new" ? (
-        <Input
-          type="number"
-          id="amount"
-          name="amount"
-          required
-          startDecorator={
-            {
-              pound: currency.symbol,
-              dollar: currency.symbol,
-              euro: currency.symbol,
-            }[currency.title]
-          }
-        />
-      ) : (
-        <Input
-          type="number"
-          id="amount"
-          name="amount"
-          value={parseFloat((row.actual_amount * currency.rate).toFixed(2))}
-          startDecorator={
-            {
-              pound: currency.symbol,
-              dollar: currency.symbol,
-              euro: currency.symbol,
-            }[currency.title]
-          }
-        />
-      )}
-    </>
+    <Input
+      type="number"
+      id={id}
+      variant={variant}
+      name={name}
+      onChange={(e) => handleChange(e.target.value)}
+      slotProps={slotProps || {}}
+      required={required || false}
+      placeholder={placeholder || ""}
+      value={amount ? parseFloat((amount * currency.rate).toFixed(2)) : 0}
+      startDecorator={
+        {
+          pound: currency.symbol,
+          dollar: currency.symbol,
+          euro: currency.symbol,
+        }[currency.title]
+      }
+    />
   );
 }
