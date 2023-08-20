@@ -3,19 +3,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Box, Button, Sheet, Typography } from "@mui/joy";
-import Table from "../components/Table";
+import Table from "../components/tables/Table";
 import { Expense } from "../types/Expense";
 import { Income } from "../types/Income";
 import { serverRequest } from "../utils/utils";
 import { ArrowLeft, PlusCircle } from "react-feather";
-import CategoryModal from "../components/CategoryModal";
 import { Category } from "../types/Category";
 
 export default function PeriodEdit() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [error, setError] = useState(false);
-  const [open, setOpen] = useState(false);
   const { periodId } = useParams();
   const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
@@ -30,54 +28,20 @@ export default function PeriodEdit() {
     else if (type === "income") addIncome(item);
   };
 
-  const saveExpense = async (expense: Expense) => {
+  const modifyItem = async (
+    itemId: string,
+    endpoint: string,
+    data: Income | Expense,
+    setFunction: Function,
+    setErrorFunction: Function,
+    requestType: string
+  ) => {
     serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-expense`,
-      { type: expense, periodId },
-      (data: Expense) => setExpenses((prevState) => [...prevState, data]),
-      setError
-    );
-  };
-
-  const saveIncome = async (income: Income) => {
-    serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-income`,
-      { type: income, periodId },
-      (data: Income) => setIncomes((prevState) => [...prevState, data]),
-      setError
-    );
-  };
-
-  const removeExpense = async (expenseId: string) => {
-    serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-income`,
-      expenseId,
-      (data: Expense) => setExpenses((prevState) => [...prevState, data]),
-      setError
-    );
-  };
-
-  const removeIncome = async (incomeId: string) => {
-    serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-income`,
-      incomeId,
-      (data: Income) => setIncomes((prevState) => [...prevState, data]),
-      setError
-    );
-  };
-
-  const createCategory = (title: string) => {
-    serverRequest(
-      "post",
-      `finance/create-category`,
-      { title },
-      (data: Category[]) => {
-        setCategories(data);
-      },
+      requestType,
+      `finance/monthly-period/${periodId}/${endpoint}`,
+      itemId,
+      (data: Income | Expense) =>
+        setFunction((prevState: Income[] | Expense[]) => [...prevState, data]),
       setError
     );
   };
@@ -92,12 +56,6 @@ export default function PeriodEdit() {
         mx: "auto",
       }}
     >
-      <CategoryModal
-        createCategory={createCategory as Function}
-        categories={categories}
-        open={open}
-        setOpen={setOpen}
-      ></CategoryModal>
       <div className="grid grid-col-auto">
         <Box
           sx={{
@@ -111,19 +69,6 @@ export default function PeriodEdit() {
             <ArrowLeft size={18}></ArrowLeft>
             <Typography sx={{ marginLeft: 1 }}>Back</Typography>
           </Button>
-          <Button
-            variant="solid"
-            sx={{ marginTop: "auto" }}
-            onClick={() => setOpen(true)}
-          >
-            <Typography
-              level="title-sm"
-              sx={{ marginRight: 1, color: "white" }}
-            >
-              Create Category
-            </Typography>
-            <PlusCircle></PlusCircle>
-          </Button>
         </Box>
 
         <div className="mb-1">
@@ -135,8 +80,8 @@ export default function PeriodEdit() {
             type="expense"
             items={expenses}
             categories={categories}
-            saveItem={saveExpense}
-            removeItem={removeExpense}
+            saveItem={modifyItem}
+            removeItem={modifyItem}
           />
         </div>
         <div className="w-full mt-12">
@@ -148,8 +93,24 @@ export default function PeriodEdit() {
             type="income"
             items={incomes}
             categories={categories}
-            saveItem={saveIncome}
-            removeItem={removeIncome}
+            saveItem={(data: Income) =>
+              serverRequest(
+                "post",
+                `finance/monthly-period/${periodId}/save-income`,
+                data.category,
+                () => setIncomes((prevState) => [...prevState, data]),
+                setError
+              )
+            }
+            removeItem={(incomeId: String) =>
+              serverRequest(
+                "post",
+                `finance/monthly-period/${periodId}/remove-income`,
+                incomeId,
+                () => setIncomes((prevState) => [...prevState]),
+                setError
+              )
+            }
           />
         </div>
       </div>

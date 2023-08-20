@@ -13,13 +13,13 @@ import {
   Typography,
 } from "@mui/joy";
 import { Plus } from "react-feather";
-import CategoryTable from "../components/CategoryTable";
+import CategoryTable from "../components/tables/CategoryTable";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import { serverRequest } from "../utils/utils";
 import { Store } from "../Store";
 import { Category } from "../types/Category";
-import AmountSelector from "../components/AmountSelector";
-import ReportDisplay from "../components/ReportDisplay";
+import AmountSelector from "../components/inputs/AmountSelector";
+import ReportDisplay from "../components/layout/ReportDisplay";
 
 export default function Period() {
   const [error, setError] = useState(false);
@@ -28,6 +28,7 @@ export default function Period() {
   const { currency } = useContext(Store);
   const [expensesCategories, setExpensesCategories] = useState<Category[]>([]);
   const [incomesCategories, setIncomesCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const addExpenseCategory = (category: Category) => {
     setPeriod((prevState) => {
@@ -54,7 +55,10 @@ export default function Period() {
       "get",
       `finance/monthly-period/${periodId}`,
       undefined,
-      (data: MonthlyPeriod) => setPeriod(data),
+      (data: MonthlyPeriod) => {
+        console.log(data);
+        setPeriod(data);
+      },
       setError
     );
   };
@@ -176,6 +180,18 @@ export default function Period() {
     );
   };
 
+  const getCategories = (title: string) => {
+    serverRequest(
+      "post",
+      `finance/categories`,
+      { title },
+      (data: Category[]) => {
+        setCategories(data);
+      },
+      setError
+    );
+  };
+
   useEffect(() => {
     getMonthlyPeriod();
   }, []);
@@ -250,7 +266,7 @@ export default function Period() {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { sm: "1fr", lg: "1fr 1fr" },
+          gridTemplateColumns: "1fr",
           gap: "10px",
         }}
       >

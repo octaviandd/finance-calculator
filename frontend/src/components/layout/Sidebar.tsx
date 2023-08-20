@@ -14,12 +14,12 @@ import ListItemContent from "@mui/joy/ListItemContent";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
-import ColorSchemeToggle from "../utils/ColorSchemeToggle";
-import { closeSidebar } from "../utils/utils";
+import ColorSchemeToggle from "../../utils/ColorSchemeToggle";
+import { closeSidebar } from "../../utils/utils";
 import { LogOut, Coffee, Home, BarChart2, Filter } from "react-feather";
 import { Link } from "react-router-dom";
-import Modal from "./Modal";
-import { Store } from "../Store";
+import Modal from "../Modal";
+import { Store } from "../../Store";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);

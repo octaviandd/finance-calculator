@@ -1,8 +1,8 @@
 /** @format */
 
 import React from "react";
-import { Expense } from "../types/Expense";
-import { Income } from "../types/Income";
+import { Expense } from "../../types/Expense";
+import { Income } from "../../types/Income";
 import { Input } from "@mui/joy";
 import dayjs from "dayjs";
 

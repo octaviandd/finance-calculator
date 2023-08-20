@@ -1,8 +1,8 @@
 /** @format */
 
 import PeriodContainer from "./PeriodContainer";
-import { Period } from "../types/Period";
-import { MonthlyPeriod } from "../types/MonthlyPeriod";
+import { Period } from "../../types/Period";
+import { MonthlyPeriod } from "../../types/MonthlyPeriod";
 
 export default function Periods({ period }: { period: Period }) {
   return (

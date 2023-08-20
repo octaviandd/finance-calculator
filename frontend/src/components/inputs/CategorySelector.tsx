@@ -2,9 +2,9 @@
 
 import { FormControl, Select, Option } from "@mui/joy";
 import React, { useState } from "react";
-import { Category } from "../types/Category";
-import { Expense } from "../types/Expense";
-import { Income } from "../types/Income";
+import { Category } from "../../types/Category";
+import { Expense } from "../../types/Expense";
+import { Income } from "../../types/Income";
 
 type Props = {
   categories: Category[];

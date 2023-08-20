@@ -1,44 +1,51 @@
 /** @format */
 
-import React, { useContext, useState } from "react";
-import Box from "@mui/joy/Box";
+import React, { useState, useContext } from "react";
+import Button from "@mui/joy/Button";
 import Link from "@mui/joy/Link";
-import Input from "@mui/joy/Input";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import { Order } from "../types/Order";
-import { ArrowDown } from "react-feather";
-import { Store } from "../Store";
-import { Category } from "../types/Category";
-import { Filters } from "./Filters";
-import { Button } from "@mui/joy";
-import TextSelector from "./TextSelector";
-import AmountSelector from "./AmountSelector";
+import { Category } from "../../types/Category";
+import { Expense } from "../../types/Expense";
+import { Income } from "../../types/Income";
+import { Order } from "../../types/Order";
+import { Filters } from "../Filters";
+import { stableSort, getComparator, formatDate } from "../../utils/utils";
+import { Store } from "../../Store";
+import CategorySelector from "../inputs/CategorySelector";
+import AmountSelector from "../inputs/AmountSelector";
+import DateSelector from "../inputs/DateSelector";
+import TextSelector from "../inputs/TextSelector";
 
-export default function ReportTable({
-  items,
-  setPlannedAmount,
+export default function OrderTable({
   createRow,
+  type,
+  items,
+  categories,
   saveItem,
   removeItem,
-  type,
 }: {
-  items: Category[];
-  setPlannedAmount: Function;
   createRow: Function;
+  type: String;
+  items: Expense[] | Income[];
+  categories: Category[];
   saveItem: Function;
   removeItem: Function;
-  type: string;
 }) {
-  const [order, setOrder] = React.useState<Order>("desc");
-  const { currency } = useContext(Store);
   const [block, setBlock] = useState(false);
+  const [order, setOrder] = useState<Order>("desc");
+  const { currency } = useContext(Store);
 
   const addRow = () => {
     if (!block) {
+      let formattedDate = formatDate(new Date());
       let item = {
         id: String(Math.floor(Math.random() * 0.5)),
-        planned_amount: 0,
+        title: "",
+        date: formattedDate,
+        target: "",
+        category: "",
+        planned_amount: "",
         status: "new",
       };
       createRow(item, type);
@@ -56,7 +63,7 @@ export default function ReportTable({
   };
 
   return (
-    <Box>
+    <>
       <Sheet
         className="OrderTableContainer"
         variant="outlined"
@@ -83,14 +90,14 @@ export default function ReportTable({
           >
             <thead>
               <tr>
-                <th style={{ width: 160, padding: 12 }}>
+                <th style={{ width: 140, padding: 12 }}>
                   <Link
                     underline="none"
                     color="primary"
                     component="button"
                     onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
                     fontWeight="lg"
-                    endDecorator={<ArrowDown width={16} height={16} />}
+                    endDecorator={<i data-feather="arrow-down" />}
                     sx={{
                       "& svg": {
                         transition: "0.2s",
@@ -102,61 +109,45 @@ export default function ReportTable({
                     Title
                   </Link>
                 </th>
-                <th style={{ width: 160, padding: 12 }}>Planned</th>
-                <th style={{ width: 160, padding: 12 }}>Actual</th>
-                <th
-                  style={{
-                    width: "100%",
-                    padding: 12,
-                    textAlign: "right",
-                    paddingRight: "50px",
-                  }}
-                >
-                  Diff
-                </th>
+                <th style={{ width: 120, padding: 12 }}>Date</th>
+                <th style={{ width: 120, padding: 12 }}>Amount</th>
+                <th style={{ width: 120, padding: 12 }}>Category</th>
                 <th style={{ width: 160, padding: 12 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {items &&
-                items.map((row) => (
+              {stableSort(items, getComparator(order, "id")).map((row) => {
+                return (
                   <tr key={row.id}>
                     <td>
                       <TextSelector row={row} />
                     </td>
                     <td>
+                      <DateSelector row={row} />
+                    </td>
+                    <td>
                       {row.status === "new" ? (
                         <AmountSelector
                           amount={undefined}
-                          variant="plain"
                           currency={currency}
+                          variant="plain"
                           id="amount"
                           name="amount"
                           required={true}
                         />
                       ) : (
                         <AmountSelector
-                          amount={row.planned_amount}
+                          amount={row.actual_amount}
                           currency={currency}
-                          slotProps={{
-                            input: {
-                              precision: 2,
-                              step: 0.01,
-                            },
-                          }}
-                          onChange={(value: string) =>
-                            setPlannedAmount(row.id, value)
-                          }
+                          variant="plain"
                           id="amount"
                           name="amount"
-                          variant="plain"
                           required={true}
                         />
                       )}
                     </td>
-                    <td>{currency.symbol}0</td>
-                    <td style={{ textAlign: "right", paddingRight: "50px" }}>
-                      £{(0).toFixed(2)}
+                    <td>
+                      <CategorySelector categories={categories} row={row} />
                     </td>
                     <td>
                       {row.status === "new" ? (
@@ -180,12 +171,13 @@ export default function ReportTable({
                       )}
                     </td>
                   </tr>
-                ))}
+                );
+              })}
             </tbody>
           </Table>
         </form>
         <Filters addRow={addRow} />
       </Sheet>
-    </Box>
+    </>
   );
 }

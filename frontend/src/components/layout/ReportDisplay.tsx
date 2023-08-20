@@ -1,9 +1,9 @@
 /** @format */
 
 import React from "react";
-import { Currency } from "../types/Currency";
+import { Currency } from "../../types/Currency";
 import { Stack } from "@mui/joy";
-import { MonthlyPeriod } from "../types/MonthlyPeriod";
+import { MonthlyPeriod } from "../../types/MonthlyPeriod";
 
 type Props = {
   currency: Currency;

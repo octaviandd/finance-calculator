@@ -5,8 +5,8 @@ import GlobalStyles from "@mui/joy/GlobalStyles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
 import customTheme from "./theme";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
+import Sidebar from "./components/layout/Sidebar";
+import Header from "./components/layout/Header";
 import { Outlet } from "react-router-dom";
 import StoreProvider from "./Store";
 

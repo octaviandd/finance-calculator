@@ -2,7 +2,7 @@
 
 import { Input } from "@mui/joy";
 import React from "react";
-import { Currency } from "../types/Currency";
+import { Currency } from "../../types/Currency";
 
 type Props = {
   amount?: number;

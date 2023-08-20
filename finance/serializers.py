@@ -40,49 +40,57 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'planned_amount', 'category_type']
 
 class IncomeSerializer(serializers.ModelSerializer): 
     category = CategorySerializer(many = False, read_only = True)
     class Meta:
         model = Income
-        fields = ['id', 'title', 'planned_amount', 'actual_amount', 'category', 'date']
+        fields = ['id', 'title', 'amount', 'category', 'date']
 
 class ExpenseSerializer(serializers.ModelSerializer): 
     category = CategorySerializer(many = False, read_only = True)
     class Meta:
         model = Expense
-        fields = ['id', 'title', 'planned_amount', 'actual_amount', 'category', 'date']
+        fields = ['id', 'title', 'amount', 'category', 'date']
     
 
 class MonthlyPeriodSerializer(serializers.ModelSerializer):
-    incomes = IncomeSerializer(many=True, read_only=True)
-    expenses = ExpenseSerializer(many=True, read_only=True)
-
-    monthly_total_planned_incomes = serializers.SerializerMethodField()
-    monthly_total_planned_expenses = serializers.SerializerMethodField()
-    monthly_total_actual_incomes = serializers.SerializerMethodField()
-    monthly_total_actual_expenses = serializers.SerializerMethodField()
+    monthly_total_planned_incomes_amount = serializers.SerializerMethodField()
+    monthly_total_planned_expenses_amount = serializers.SerializerMethodField()
+    monthly_total_actual_incomes_amount = serializers.SerializerMethodField()
+    monthly_total_actual_expenses_amount = serializers.SerializerMethodField()
     monthly_saved_this_month = serializers.SerializerMethodField()
     monthly_end_balance = serializers.SerializerMethodField()
+    income_categories = serializers.SerializerMethodField()
+    expense_categories = serializers.SerializerMethodField()
+    
     class Meta:
         model = MonthlyPeriod
-        fields = ['id', 'title', 'from_date', 'to_date', 'incomes', 'expenses', 'total_spend', 'start_balance',
-                  'monthly_total_planned_incomes', 'monthly_total_actual_incomes', 
-                  'monthly_total_actual_expenses', 'monthly_total_planned_expenses',
+        fields = ['id', 'title', 'from_date', 'to_date', 'expense_categories', 'income_categories', 'total_spend', 'start_balance',
+                  'monthly_total_planned_incomes_amount', 'monthly_total_actual_incomes_amount', 
+                  'monthly_total_actual_expenses_amount', 'monthly_total_planned_expenses_amount',
                   'monthly_saved_this_month', 'monthly_end_balance']
+        
+    def get_income_categories(self, obj):
+        incomes = obj.categories.filter(category_type = 'income')
+        return CategorySerializer(incomes, many=True).data
+    
+    def get_expense_categories(self, obj):
+        expenses = obj.categories.filter(category_type = 'expense')
+        return CategorySerializer(expenses, many=True).data
 
-    def get_monthly_total_planned_incomes(self, obj):
-        return obj.monthly_total_planned_incomes()
+    def get_monthly_total_planned_incomes_amount(self, obj):
+        return obj.monthly_total_planned_incomes_amount()
     
-    def get_monthly_total_planned_expenses(self, obj):
-        return obj.monthly_total_planned_expenses()
+    def get_monthly_total_planned_expenses_amount(self, obj):
+        return obj.monthly_total_planned_expenses_amount()
     
-    def get_monthly_total_actual_incomes(self, obj):
-        return obj.monthly_total_actual_incomes()
+    def get_monthly_total_actual_incomes_amount(self, obj):
+        return obj.monthly_total_actual_incomes_amount()
     
-    def get_monthly_total_actual_expenses(self, obj):
-        return obj.monthly_total_actual_expenses()
+    def get_monthly_total_actual_expenses_amount(self, obj):
+        return obj.monthly_total_actual_expenses_amount()
     
     def get_monthly_saved_this_month(self, obj):
         return obj.monthly_saved_this_month()

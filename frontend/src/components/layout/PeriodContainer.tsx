@@ -7,9 +7,9 @@ import Typography from "@mui/joy/Typography";
 import { Link } from "react-router-dom";
 import { Maximize } from "react-feather";
 import { Box } from "@mui/joy";
-import { MonthlyPeriod } from "../types/MonthlyPeriod";
+import { MonthlyPeriod } from "../../types/MonthlyPeriod";
 import dayjs from "dayjs";
-import { Store } from "../Store";
+import { Store } from "../../Store";
 import { useContext } from "react";
 
 export default function BasicCard({ period }: { period: MonthlyPeriod }) {
