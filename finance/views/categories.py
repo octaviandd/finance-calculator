@@ -38,6 +38,22 @@ def create_category(request, id):
     serializer = CategorySerializer(categories, many = True)
     return Response(serializer.data, status = 200)
 
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_category(request, id):
+    categoryId = request.data['categoryId']
+
+    try:
+        category = Category.objects.get(id = categoryId)
+        category.delete()
+    except(Category.DoesNotExist) as e: 
+       return Response({'error': 'Category not found'}, status=404)
+    
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many = True)
+    return Response(serializer.data, status = 200)
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])

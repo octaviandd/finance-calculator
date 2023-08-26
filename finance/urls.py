@@ -15,6 +15,7 @@ urlpatterns = [
     path('category/<int:id>/update-planned-amount', categories.update_category_planned_amount, name="update_category_planned_amount"),
     path('categories', categories.get_categories, name="categories"),
     path('monthly-period/<int:id>/create-category', categories.create_category, name="create-category"),
+    path('monthly-period/<int:id>/delete-category', categories.delete_category, name="delete-category"),
 
     path('currency-exchange', external.get_currency_exchange, name="get_currency_exchange")
 ]

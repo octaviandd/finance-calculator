@@ -134,24 +134,25 @@ export default function Period() {
     );
   };
 
-  const removeExpenseCategory = async (expenseId: string) => {
+  const removeCategory = async (
+    categoryType: "income" | "expense",
+    categoryId: string
+  ) => {
+    let key = `${categoryType}_categories` as keyof MonthlyPeriod;
     serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-income`,
-      expenseId,
-      (data: Category) =>
-        setExpensesCategories((prevState) => [...prevState, data]),
-      setError
-    );
-  };
-
-  const removeIncomeCategory = async (incomeId: string) => {
-    serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-income`,
-      incomeId,
-      (data: Category) =>
-        setIncomesCategories((prevState) => [...prevState, data]),
+      "delete",
+      `finance/monthly-period/${periodId}/delete-category`,
+      categoryId,
+      () =>
+        setPeriod(
+          (prevState) =>
+            prevState && {
+              ...prevState,
+              [key]: prevState[key].filter(
+                (item: Category) => item.id === categoryId
+              ),
+            }
+        ),
       setError
     );
   };
@@ -162,18 +163,6 @@ export default function Period() {
       `finance/monthly-period/${periodId}/update-starting-balance`,
       { start_balance: period?.start_balance },
       (data: number) => console.log(data),
-      setError
-    );
-  };
-
-  const getCategories = (title: string) => {
-    serverRequest(
-      "post",
-      `finance/categories`,
-      { title },
-      (data: Category[]) => {
-        setCategories(data);
-      },
       setError
     );
   };
@@ -265,7 +254,7 @@ export default function Period() {
             setPlannedAmount={handleExpenseCategoryPlannedAmount}
             createRow={createRow}
             saveItem={(data: Category) => saveCategory("expense", data)}
-            removeItem={removeExpenseCategory}
+            removeItem={(id: string) => removeCategory("expense", id)}
             type="expense"
           ></CategoryTable>
         </Box>
@@ -278,7 +267,7 @@ export default function Period() {
             setPlannedAmount={handleIncomeCategoryPlannedAmount}
             createRow={createRow}
             saveItem={(data: Category) => saveCategory("income", data)}
-            removeItem={removeIncomeCategory}
+            removeItem={(id: string) => removeCategory("income", id)}
             type="income"
           ></CategoryTable>
         </Box>
