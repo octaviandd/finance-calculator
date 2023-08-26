@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-from ..serializers import CategorySerializer, ExpenseSerializer, IncomeSerializer
-from ..models import Category, Expense, Income, MonthlyPeriod
+from ..serializers import CategorySerializer
+from ..models import Category, MonthlyPeriod
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
@@ -42,14 +42,16 @@ def create_category(request, id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_category(request, id):
-    categoryId = request.data
+    categoryId = request.data['categoryId']
+    categoryType = request.data['categoryType']
+
     try:
         category = Category.objects.get(id = categoryId)
         category.delete()
     except(Category.DoesNotExist) as e: 
        return Response({'error': 'Category not found'}, status=404)
     
-    categories = Category.objects.all()
+    categories = Category.objects.filter(category_type = categoryType)
     serializer = CategorySerializer(categories, many = True)
     return Response(serializer.data, status = 200)
 

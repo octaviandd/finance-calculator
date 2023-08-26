@@ -34,3 +34,19 @@ def create_income(request, id):
     
     serializer = IncomeSerializer(expense)
     return Response(serializer.data, 200)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_income(request, id):
+    expenseId = request.data
+
+    try:
+        expense = Income.objects.get(id = expenseId)
+        expense.remove()
+    except (Income.DoesNotExist) as e:
+        return Response({"error": "Income does not exist"}, status = 404)
+    
+    serializer = IncomeSerializer(expense)
+    return Response(serializer.data, status = 200)

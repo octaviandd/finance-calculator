@@ -118,8 +118,8 @@ export default function Period() {
     serverRequest(
       "delete",
       `finance/monthly-period/${periodId}/delete-category`,
-      categoryId,
-      () =>
+      { categoryId, categoryType },
+      (data: Category[]) =>
         setPeriod(
           (prevState) =>
             prevState && {

@@ -95,7 +95,7 @@ export default function PeriodEdit() {
               removeItem={(expenseId: String) =>
                 serverRequest(
                   "post",
-                  `finance/monthly-period/${periodId}/remove-expense`,
+                  `finance/monthly-period/${periodId}/delete-expense`,
                   expenseId,
                   () =>
                     setPeriod(
@@ -134,7 +134,7 @@ export default function PeriodEdit() {
               saveItem={(data: Income) =>
                 serverRequest(
                   "post",
-                  `finance/monthly-period/${periodId}/save-expense`,
+                  `finance/monthly-period/${periodId}/save-income`,
                   data,
                   () =>
                     setPeriod(
@@ -150,7 +150,7 @@ export default function PeriodEdit() {
               removeItem={(incomeId: String) =>
                 serverRequest(
                   "post",
-                  `finance/monthly-period/${periodId}/remove-expense`,
+                  `finance/monthly-period/${periodId}/remove-income`,
                   incomeId,
                   () =>
                     setPeriod(

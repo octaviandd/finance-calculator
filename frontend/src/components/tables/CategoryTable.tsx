@@ -54,10 +54,6 @@ export default function ReportTable({
     setBlock(false);
   };
 
-  useEffect(() => {
-    console.log(items);
-  });
-
   return (
     <Box>
       <Sheet
@@ -143,9 +139,12 @@ export default function ReportTable({
                     </td>
                     <td>
                       {currency.symbol}
-                      {row.actual_amount}
+                      {row.actual_amount || 0}
                     </td>
-                    <td>£{(0).toFixed(2)}</td>
+                    <td>
+                      {currency.symbol}
+                      {row.planned_amount - row.actual_amount || 0}
+                    </td>
                     <td>
                       {row.status === "new" ? (
                         <Button
