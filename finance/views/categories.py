@@ -42,8 +42,7 @@ def create_category(request, id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_category(request, id):
-    categoryId = request.data['categoryId']
-
+    categoryId = request.data
     try:
         category = Category.objects.get(id = categoryId)
         category.delete()

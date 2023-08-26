@@ -13,7 +13,7 @@ import {
 import { Plus } from "react-feather";
 import CategoryTable from "../components/tables/CategoryTable";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
-import { serverRequest } from "../utils/utils";
+import { serverRequest, debounce } from "../utils/utils";
 import { Store } from "../Store";
 import { Category } from "../types/Category";
 import AmountSelector from "../components/inputs/Number";
@@ -25,25 +25,13 @@ export default function Period() {
   const [period, setPeriod] = useState<MonthlyPeriod>();
   const { currency } = useContext(Store);
 
-  const addExpenseCategory = (category: Category) => {
-    setPeriod((prevState) => {
-      if (prevState) {
-        let newExpenses = [...prevState.expense_categories, category];
-        return { ...prevState, expense_categories: newExpenses };
-      }
-    });
+  const addCategory = (category: Category, categoryType: string) => {
+    let key = `${categoryType}_categories` as keyof MonthlyPeriod;
+    setPeriod(
+      (prevState) =>
+        prevState && { ...prevState, [key]: [...prevState[key], category] }
+    );
   };
-  const addIncomeCategory = (category: Category) => {
-    setPeriod((prevState) => {
-      if (prevState) {
-        let newExpenses = [...prevState.income_categories, category];
-        return { ...prevState, income_categories: newExpenses };
-      }
-    });
-  };
-
-  const createRow = (item: any, type: any) =>
-    type === "expense" ? addExpenseCategory(item) : addIncomeCategory(item);
 
   const getMonthlyPeriod = async () => {
     serverRequest(
@@ -64,70 +52,62 @@ export default function Period() {
         prevState && { ...prevState, start_balance: parseFloat(value) }
     );
 
-  const handleIncomeCategoryPlannedAmount = (id: string, value: string) => {
-    if (period) {
-      setPeriod((prevState) => {
-        if (prevState) {
-          let toModifyCategoryIndex = prevState.income_categories.findIndex(
-            (category) => category.id == id
-          );
-          let newIncomes = [...prevState.income_categories];
-          newIncomes[toModifyCategoryIndex].planned_amount = Number(value);
-          return { ...prevState, income_categories: newIncomes };
-        }
-      });
-
-      serverRequest(
-        "post",
-        `finance/category/${id}/update-planned-amount`,
-        { amount: parseFloat(value) },
-        (data: string) => console.log(data),
-        setError
-      );
-    }
-  };
-
-  const handleExpenseCategoryPlannedAmount = (id: string, value: string) => {
-    if (period) {
-      setPeriod((prevState) => {
-        if (prevState) {
-          let toModifyCategoryIndex = prevState.expense_categories.findIndex(
-            (category) => category.id == id
-          );
-          let newIncomes = [...prevState.expense_categories];
-          newIncomes[toModifyCategoryIndex].planned_amount = Number(value);
-          return { ...prevState, expense_categories: newIncomes };
-        }
-      });
-
-      serverRequest(
-        "post",
-        `finance/category/${id}/update-planned-amount`,
-        { amount: parseFloat(value) },
-        (data: string) => console.log(data),
-        setError
-      );
-    }
-  };
-
-  const saveCategory = async (
-    categoryType: "income" | "expense",
-    category: Category
-  ) => {
-    let key = `${categoryType}_categories` as keyof MonthlyPeriod;
+  const saveStartBalance = () => {
     serverRequest(
       "post",
-      `finance/monthly-period/${periodId}/create-category`,
-      { categoryType, category },
-      (data: Category) => {
-        setPeriod(
-          (prevState) =>
-            prevState && { ...prevState, [key]: [...prevState[key], data] }
-        );
-      },
+      `finance/monthly-period/${periodId}/update-starting-balance`,
+      { start_balance: period?.start_balance },
+      (data: number) => console.log(data),
       setError
     );
   };
+
+  const debouncedHandleCategoryPlannedAmount = debounce(
+    (id: string, value: string, categoryType: string) => {
+      let key = `${categoryType}_categories` as keyof MonthlyPeriod;
+      setPeriod(
+        (prevState) =>
+          prevState && {
+            ...prevState,
+            [key]: [
+              ...prevState[key].map((item: Category) =>
+                item.id === id
+                  ? { ...item, planned_amount: Number(value) }
+                  : item
+              ),
+            ],
+          }
+      );
+
+      serverRequest(
+        "post",
+        `finance/category/${id}/update-planned-amount`,
+        { amount: parseFloat(value) },
+        (data: string) => console.log(data),
+        setError
+      );
+    },
+    500
+  );
+
+  const debouncedSaveCategory = debounce(
+    (categoryType: "income" | "expense", category: Category) => {
+      let key = `${categoryType}_categories` as keyof MonthlyPeriod;
+      serverRequest(
+        "post",
+        `finance/monthly-period/${periodId}/create-category`,
+        { categoryType, category },
+        (data: Category) => {
+          setPeriod(
+            (prevState) =>
+              prevState && { ...prevState, [key]: [...prevState[key], data] }
+          );
+        },
+        setError
+      );
+    },
+    500
+  );
 
   const removeCategory = async (
     categoryType: "income" | "expense",
@@ -149,16 +129,6 @@ export default function Period() {
               ),
             }
         ),
-      setError
-    );
-  };
-
-  const saveStartBalance = () => {
-    serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/update-starting-balance`,
-      { start_balance: period?.start_balance },
-      (data: number) => console.log(data),
       setError
     );
   };
@@ -247,9 +217,15 @@ export default function Period() {
           </Typography>
           <CategoryTable
             items={period?.expense_categories as Category[]}
-            setPlannedAmount={handleExpenseCategoryPlannedAmount}
-            createRow={createRow}
-            saveItem={(data: Category) => saveCategory("expense", data)}
+            setPlannedAmount={(id: string, value: string) =>
+              debouncedHandleCategoryPlannedAmount(id, value, "expense")
+            }
+            createRow={(item: Category, type: string) =>
+              addCategory(item, type)
+            }
+            saveItem={(data: Category) =>
+              debouncedSaveCategory("expense", data)
+            }
             removeItem={(id: string) => removeCategory("expense", id)}
             type="expense"
           ></CategoryTable>
@@ -260,9 +236,13 @@ export default function Period() {
           </Typography>
           <CategoryTable
             items={period?.income_categories as Category[]}
-            setPlannedAmount={handleIncomeCategoryPlannedAmount}
-            createRow={createRow}
-            saveItem={(data: Category) => saveCategory("income", data)}
+            setPlannedAmount={(id: string, value: string) =>
+              debouncedHandleCategoryPlannedAmount(id, value, "income")
+            }
+            createRow={(item: Category, type: string) =>
+              addCategory(item, type)
+            }
+            saveItem={(data: Category) => debouncedSaveCategory("income", data)}
             removeItem={(id: string) => removeCategory("income", id)}
             type="income"
           ></CategoryTable>

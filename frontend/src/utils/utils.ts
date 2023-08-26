@@ -117,3 +117,15 @@ export const serverRequest = async (
     }
   }
 };
+
+export const debounce = (fn: Function, time: number) => {
+  let timeout: any;
+  return (...args: any[]) => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      fn(...args);
+    }, time);
+  };
+};

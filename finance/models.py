@@ -12,6 +12,9 @@ class Category(models.Model):
     planned_amount = models.FloatField(default=0)
     category_type = models.CharField(max_length=10, choices=CATEGORY_TYPE_CHOICES, default='income')
 
+    def actual_amount(self):
+        return self.expenses_set.aggregate(total = Sum('amount'))['total'] or 0
+
 class Expense(models.Model):
     title = models.CharField(max_length=50)
     amount = models.FloatField(default=0)

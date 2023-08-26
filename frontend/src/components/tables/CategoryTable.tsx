@@ -1,9 +1,8 @@
 /** @format */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
 import Link from "@mui/joy/Link";
-import Input from "@mui/joy/Input";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
 import { Order } from "../../types/Order";
@@ -54,6 +53,10 @@ export default function ReportTable({
     form.currentTarget.reset();
     setBlock(false);
   };
+
+  useEffect(() => {
+    console.log(items);
+  });
 
   return (
     <Box>
@@ -117,7 +120,11 @@ export default function ReportTable({
                     </td>
                     <td>
                       <AmountSelector
-                        amount={row.planned_amount.toString()}
+                        amount={
+                          row.planned_amount
+                            ? row.planned_amount.toString()
+                            : "0"
+                        }
                         currency={currency}
                         slotProps={{
                           input: {
@@ -134,7 +141,10 @@ export default function ReportTable({
                         required={true}
                       />
                     </td>
-                    <td>{currency.symbol}0</td>
+                    <td>
+                      {currency.symbol}
+                      {row.actual_amount}
+                    </td>
                     <td>£{(0).toFixed(2)}</td>
                     <td>
                       {row.status === "new" ? (

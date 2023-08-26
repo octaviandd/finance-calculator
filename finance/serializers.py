@@ -38,9 +38,13 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
 class CategorySerializer(serializers.ModelSerializer):
+    actual_amount = serializers.SerializerMethodField()
     class Meta:
         model = Category
-        fields = ['id', 'title', 'planned_amount', 'category_type']
+        fields = ['id', 'title', 'planned_amount', 'category_type', 'actual_amount']
+
+    def actual_amount(self):
+        return self.expenses_set
 
 class IncomeSerializer(serializers.ModelSerializer): 
     category = CategorySerializer(many = False, read_only = True)
