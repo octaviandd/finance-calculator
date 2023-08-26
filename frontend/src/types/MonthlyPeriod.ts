@@ -1,6 +1,8 @@
 /** @format */
 
 import { Category } from "./Category";
+import { Expense } from "./Expense";
+import { Income } from "./Income";
 export type MonthlyPeriod = {
   id: number | string;
   title: string;
@@ -16,4 +18,7 @@ export type MonthlyPeriod = {
   monthly_total_planned_incomes_amount: number;
   income_categories: Category[];
   expense_categories: Category[];
+  incomes: Income[];
+  expenses: Expense[];
+  [key: string]: any;
 };

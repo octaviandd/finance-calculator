@@ -7,44 +7,31 @@ import Table from "../components/tables/Table";
 import { Expense } from "../types/Expense";
 import { Income } from "../types/Income";
 import { serverRequest } from "../utils/utils";
-import { ArrowLeft, PlusCircle } from "react-feather";
-import { Category } from "../types/Category";
+import { ArrowLeft } from "react-feather";
+import { MonthlyPeriod } from "../types/MonthlyPeriod";
 
 export default function PeriodEdit() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [incomes, setIncomes] = useState<Income[]>([]);
   const [error, setError] = useState(false);
   const { periodId } = useParams();
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [period, setPeriod] = useState<MonthlyPeriod>();
   const navigate = useNavigate();
 
-  const addExpense = (expense: Expense) =>
-    setExpenses((prevState) => prevState.concat(expense));
-  const addIncome = (income: Income) =>
-    setIncomes((prevState) => [...prevState, income]);
-
-  const createRow = (item: any, type: any) => {
-    if (type === "expense") addExpense(item);
-    else if (type === "income") addIncome(item);
-  };
-
-  const modifyItem = async (
-    itemId: string,
-    endpoint: string,
-    data: Income | Expense,
-    setFunction: Function,
-    setErrorFunction: Function,
-    requestType: string
-  ) => {
+  const getMonthlyPeriod = async () => {
     serverRequest(
-      requestType,
-      `finance/monthly-period/${periodId}/${endpoint}`,
-      itemId,
-      (data: Income | Expense) =>
-        setFunction((prevState: Income[] | Expense[]) => [...prevState, data]),
+      "get",
+      `finance/monthly-period/${periodId}`,
+      undefined,
+      (data: MonthlyPeriod) => {
+        console.log(data);
+        setPeriod(data);
+      },
       setError
     );
   };
+
+  useEffect(() => {
+    getMonthlyPeriod();
+  }, []);
 
   return (
     <Sheet
@@ -75,43 +62,111 @@ export default function PeriodEdit() {
           <Typography fontSize="xl2" sx={{ marginBottom: 2 }}>
             Expenses
           </Typography>
-          <Table
-            createRow={createRow}
-            type="expense"
-            items={expenses}
-            categories={categories}
-            saveItem={modifyItem}
-            removeItem={modifyItem}
-          />
+          {period && (
+            <Table
+              createRow={(item: Income) =>
+                setPeriod(
+                  (prevState) =>
+                    prevState && {
+                      ...prevState,
+                      expenses: [...prevState.expenses, item],
+                    }
+                )
+              }
+              type="expense"
+              items={period.expenses}
+              categories={period.expense_categories}
+              saveItem={(data: Expense) =>
+                serverRequest(
+                  "post",
+                  `finance/monthly-period/${periodId}/save-expense`,
+                  data,
+                  () =>
+                    setPeriod(
+                      (prevState) =>
+                        prevState && {
+                          ...prevState,
+                          expenses: [...prevState.expenses, data],
+                        }
+                    ),
+                  setError
+                )
+              }
+              removeItem={(expenseId: String) =>
+                serverRequest(
+                  "post",
+                  `finance/monthly-period/${periodId}/remove-expense`,
+                  expenseId,
+                  () =>
+                    setPeriod(
+                      (prevState) =>
+                        prevState && {
+                          ...prevState,
+                          expenses: prevState.expenses.filter(
+                            (expense) => expense.id === expenseId
+                          ),
+                        }
+                    ),
+                  setError
+                )
+              }
+            />
+          )}
         </div>
         <div className="w-full mt-12">
           <Typography fontSize="xl2" sx={{ marginBottom: 2 }}>
             Income
           </Typography>
-          <Table
-            createRow={createRow}
-            type="income"
-            items={incomes}
-            categories={categories}
-            saveItem={(data: Income) =>
-              serverRequest(
-                "post",
-                `finance/monthly-period/${periodId}/save-income`,
-                data.category,
-                () => setIncomes((prevState) => [...prevState, data]),
-                setError
-              )
-            }
-            removeItem={(incomeId: String) =>
-              serverRequest(
-                "post",
-                `finance/monthly-period/${periodId}/remove-income`,
-                incomeId,
-                () => setIncomes((prevState) => [...prevState]),
-                setError
-              )
-            }
-          />
+          {period && (
+            <Table
+              createRow={(item: Income) =>
+                setPeriod(
+                  (prevState) =>
+                    prevState && {
+                      ...prevState,
+                      incomes: [...prevState.incomes, item],
+                    }
+                )
+              }
+              type="income"
+              items={period.incomes}
+              categories={period.income_categories}
+              saveItem={(data: Income) =>
+                serverRequest(
+                  "post",
+                  `finance/monthly-period/${periodId}/save-expense`,
+                  data,
+                  () =>
+                    setPeriod(
+                      (prevState) =>
+                        prevState && {
+                          ...prevState,
+                          incomes: [...prevState.incomes, data],
+                        }
+                    ),
+                  setError
+                )
+              }
+              removeItem={(incomeId: String) =>
+                serverRequest(
+                  "post",
+                  `finance/monthly-period/${periodId}/remove-expense`,
+                  incomeId,
+                  () =>
+                    setPeriod(
+                      (prevState) =>
+                        prevState && {
+                          ...prevState,
+                          incomes: prevState.incomes.filter(
+                            (income) => income.id === incomeId
+                          ),
+                        }
+                    ),
+                  setError
+                )
+              }
+            />
+          )}
         </div>
       </div>
     </Sheet>

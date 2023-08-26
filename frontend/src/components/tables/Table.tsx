@@ -12,10 +12,10 @@ import { Order } from "../../types/Order";
 import { Filters } from "../Filters";
 import { stableSort, getComparator, formatDate } from "../../utils/utils";
 import { Store } from "../../Store";
-import CategorySelector from "../inputs/CategorySelector";
-import AmountSelector from "../inputs/AmountSelector";
-import DateSelector from "../inputs/DateSelector";
-import TextSelector from "../inputs/TextSelector";
+import CategorySelector from "../inputs/Select";
+import AmountSelector from "../inputs/Number";
+import DateSelector from "../inputs/Date";
+import TextSelector from "../inputs/Text";
 
 export default function OrderTable({
   createRow,
@@ -34,6 +34,7 @@ export default function OrderTable({
 }) {
   const [block, setBlock] = useState(false);
   const [order, setOrder] = useState<Order>("desc");
+  const [newItem, setNewItem] = useState();
   const { currency } = useContext(Store);
 
   const addRow = () => {
@@ -48,7 +49,7 @@ export default function OrderTable({
         planned_amount: "",
         status: "new",
       };
-      createRow(item, type);
+      createRow(item);
       setBlock(true);
     }
   };
@@ -57,6 +58,7 @@ export default function OrderTable({
     form.preventDefault();
     const formData = new FormData(form.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
     saveItem(formJson);
     form.currentTarget.reset();
     setBlock(false);
@@ -120,31 +122,20 @@ export default function OrderTable({
                 return (
                   <tr key={row.id}>
                     <td>
-                      <TextSelector row={row} />
+                      <TextSelector input={row.title || ""} />
                     </td>
                     <td>
                       <DateSelector row={row} />
                     </td>
                     <td>
-                      {row.status === "new" ? (
-                        <AmountSelector
-                          amount={undefined}
-                          currency={currency}
-                          variant="plain"
-                          id="amount"
-                          name="amount"
-                          required={true}
-                        />
-                      ) : (
-                        <AmountSelector
-                          amount={row.actual_amount}
-                          currency={currency}
-                          variant="plain"
-                          id="amount"
-                          name="amount"
-                          required={true}
-                        />
-                      )}
+                      <AmountSelector
+                        amount={row.amount ? row.amount.toString() : "0"}
+                        currency={currency}
+                        variant="plain"
+                        id="amount"
+                        name="amount"
+                        required={true}
+                      />
                     </td>
                     <td>
                       <CategorySelector categories={categories} row={row} />

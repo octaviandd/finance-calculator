@@ -1,11 +1,11 @@
 /** @format */
 
 import { Input } from "@mui/joy";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Currency } from "../../types/Currency";
 
 type Props = {
-  amount?: number;
+  amount?: string;
   currency: Currency;
   onChange?: Function;
   placeholder?: string;
@@ -16,18 +16,29 @@ type Props = {
   variant: any;
 };
 
-export default function AmountSelector({
-  amount,
+export default function NumberInput({
+  amount = "",
   currency,
-  placeholder,
+  placeholder = "0",
   onChange,
-  slotProps,
+  slotProps = {},
   id,
   name,
-  required,
+  required = false,
   variant,
 }: Props) {
-  const handleChange = onChange ? onChange : () => {};
+  const [value, setValue] = useState("0");
+  const handleChange = (value: string) => {
+    setValue(value);
+    if (typeof onChange === "function") onChange(value) && setValue("");
+  };
+
+  useEffect(() => {
+    if (amount) {
+      setValue(amount);
+    }
+  }, [amount]);
+
   return (
     <Input
       type="number"
@@ -35,10 +46,10 @@ export default function AmountSelector({
       variant={variant}
       name={name}
       onChange={(e) => handleChange(e.target.value)}
-      slotProps={slotProps || {}}
-      required={required || false}
-      placeholder={placeholder || ""}
-      value={amount ? parseFloat((amount * currency.rate).toFixed(2)) : 0}
+      slotProps={slotProps}
+      required={required}
+      placeholder={placeholder}
+      value={value}
       startDecorator={
         {
           pound: currency.symbol,

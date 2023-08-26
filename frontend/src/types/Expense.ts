@@ -7,7 +7,6 @@ export type Expense = {
   title: string;
   date: Date;
   status: "new" | "created";
-  planned_amount: number | string;
-  actual_amount: number;
+  amount: number;
   category: Category;
 };

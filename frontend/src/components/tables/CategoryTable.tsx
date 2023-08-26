@@ -12,8 +12,8 @@ import { Store } from "../../Store";
 import { Category } from "../../types/Category";
 import { Filters } from "../Filters";
 import { Button } from "@mui/joy";
-import TextSelector from "../inputs/TextSelector";
-import AmountSelector from "../inputs/AmountSelector";
+import TextSelector from "../inputs/Text";
+import AmountSelector from "../inputs/Number";
 
 export default function ReportTable({
   items,
@@ -113,37 +113,26 @@ export default function ReportTable({
                 items.map((row) => (
                   <tr key={row.id}>
                     <td>
-                      <TextSelector row={row} />
+                      <TextSelector input={row.title || ""} />
                     </td>
                     <td>
-                      {row.status === "new" ? (
-                        <AmountSelector
-                          amount={undefined}
-                          variant="plain"
-                          currency={currency}
-                          id="amount"
-                          name="amount"
-                          required={true}
-                        />
-                      ) : (
-                        <AmountSelector
-                          amount={row.planned_amount}
-                          currency={currency}
-                          slotProps={{
-                            input: {
-                              precision: 2,
-                              step: 0.01,
-                            },
-                          }}
-                          onChange={(value: string) =>
-                            setPlannedAmount(row.id, value)
-                          }
-                          id="amount"
-                          name="amount"
-                          variant="plain"
-                          required={true}
-                        />
-                      )}
+                      <AmountSelector
+                        amount={row.planned_amount.toString()}
+                        currency={currency}
+                        slotProps={{
+                          input: {
+                            precision: 2,
+                            step: 0.01,
+                          },
+                        }}
+                        onChange={(value: string) =>
+                          setPlannedAmount(row.id, value)
+                        }
+                        id="amount"
+                        name="amount"
+                        variant="plain"
+                        required={true}
+                      />
                     </td>
                     <td>{currency.symbol}0</td>
                     <td>£{(0).toFixed(2)}</td>

@@ -64,21 +64,37 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
     monthly_end_balance = serializers.SerializerMethodField()
     income_categories = serializers.SerializerMethodField()
     expense_categories = serializers.SerializerMethodField()
+    incomes = serializers.SerializerMethodField()
+    expenses = serializers.SerializerMethodField()
     
     class Meta:
         model = MonthlyPeriod
-        fields = ['id', 'title', 'from_date', 'to_date', 'expense_categories', 'income_categories', 'total_spend', 'start_balance',
+        fields = ['id', 'title', 'from_date', 'to_date', 'expense_categories', 'income_categories', 'incomes', 'expenses', 'total_spend', 'start_balance',
                   'monthly_total_planned_incomes_amount', 'monthly_total_actual_incomes_amount', 
                   'monthly_total_actual_expenses_amount', 'monthly_total_planned_expenses_amount',
                   'monthly_saved_this_month', 'monthly_end_balance']
         
     def get_income_categories(self, obj):
-        incomes = obj.categories.filter(category_type = 'income')
-        return CategorySerializer(incomes, many=True).data
+        incomes_categories = obj.categories.filter(category_type = 'income')
+        return CategorySerializer(incomes_categories, many=True).data
     
     def get_expense_categories(self, obj):
-        expenses = obj.categories.filter(category_type = 'expense')
-        return CategorySerializer(expenses, many=True).data
+        expenses_categories = obj.categories.filter(category_type = 'expense')
+        return CategorySerializer(expenses_categories, many=True).data
+    
+    def get_incomes(self, obj):
+        incomes_categories = obj.categories.filter(category_type = 'income')
+        incomes = []
+        for income_category in incomes_categories:
+            incomes.extend(list(income_category.incomes_set.all()))
+        return IncomeSerializer(incomes, many=True).data
+    
+    def get_expenses(self, obj):
+        expenses_categories = obj.categories.filter(category_type = 'expense')
+        expenses = []
+        for expense_category in expenses_categories:
+            expenses.extend(list(expense_category.expenses_set.all()))
+        return ExpenseSerializer(expenses, many=True).data
 
     def get_monthly_total_planned_incomes_amount(self, obj):
         return obj.monthly_total_planned_incomes_amount()

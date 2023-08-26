@@ -10,7 +10,7 @@ type Props = {
   row: Expense | Income;
 };
 
-export default function DateSelector({ row }: Props) {
+export default function DateInput({ row }: Props) {
   return (
     <>
       {row.status === "new" ? (

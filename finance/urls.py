@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import categories, monthly_periods, yearly_periods, auth, external
+from .views import categories, monthly_periods, yearly_periods, auth, external, income, expense
 
 urlpatterns = [
     path("register", auth.register, name="register"),
@@ -10,11 +10,11 @@ urlpatterns = [
     path('monthly-period/<int:id>/', monthly_periods.get_monthly_period, name="monthly_period"),
     path('monthly-period/<int:id>/edit', monthly_periods.edit_monthly_period, name="monthly_period_edit"),
     path('monthly-period/<int:id>/update-starting-balance', monthly_periods.update_monthly_starting_balance, name="monthly_starting_balance"),
-    path('monthly-period/<int:id>/save-income', categories.create_category_income, name="category_income"),
-    path('monthly-period/<int:id>/save-expense', categories.create_category_expense, name="category_expense"),
+    path('monthly-period/<int:id>/save-income', income.create_income, name="create"),
+    path('monthly-period/<int:id>/save-expense', expense.create_expense, name="create_expense"),
     path('category/<int:id>/update-planned-amount', categories.update_category_planned_amount, name="update_category_planned_amount"),
     path('categories', categories.get_categories, name="categories"),
-    path('create-category', categories.create_category, name="create-category"),
+    path('monthly-period/<int:id>/create-category', categories.create_category, name="create-category"),
 
     path('currency-exchange', external.get_currency_exchange, name="get_currency_exchange")
 ]

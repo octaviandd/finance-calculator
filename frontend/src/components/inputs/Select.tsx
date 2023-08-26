@@ -11,7 +11,7 @@ type Props = {
   row: Expense | Income;
 };
 
-export default function CategorySelector({ categories, row }: Props) {
+export default function SelectInput({ categories, row }: Props) {
   const [currentCategory, setCurrentCategory] = useState("");
   return (
     <>

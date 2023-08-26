@@ -18,7 +18,7 @@ import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import { serverRequest } from "../utils/utils";
 import { Store } from "../Store";
 import { Category } from "../types/Category";
-import AmountSelector from "../components/inputs/AmountSelector";
+import AmountSelector from "../components/inputs/Number";
 import ReportDisplay from "../components/layout/ReportDisplay";
 
 export default function Period() {
@@ -115,35 +115,21 @@ export default function Period() {
     }
   };
 
-  const saveIncomeCategory = async (category: Category) => {
+  const saveCategory = async (
+    categoryType: "income" | "expense",
+    category: Category
+  ) => {
+    let key = `${categoryType}_categories` as keyof MonthlyPeriod;
     serverRequest(
       "post",
-      `finance/monthly-period/${periodId}/save-income`,
-      { type: category, periodId },
-      (data: Category) =>
+      `finance/monthly-period/${periodId}/create-category`,
+      { categoryType, category },
+      (data: Category) => {
         setPeriod(
           (prevState) =>
-            prevState && {
-              ...prevState,
-              income_categories: [...prevState.income_categories, data],
-            }
-        ),
-      setError
-    );
-  };
-
-  const saveExpenseCategory = async (category: Category) => {
-    serverRequest(
-      "post",
-      `finance/monthly-period/${periodId}/save-expense`,
-      { type: category, periodId },
-      (data: Category) =>
-        setPeriod((prevState) => {
-          if (prevState) {
-            let newExpenses = [...prevState.expense_categories, data];
-            return { ...prevState, expense_categories: newExpenses };
-          }
-        }),
+            prevState && { ...prevState, [key]: [...prevState[key], data] }
+        );
+      },
       setError
     );
   };
@@ -225,7 +211,7 @@ export default function Period() {
                   currency={currency}
                   placeholder="999.99"
                   onChange={handleStartBalanceChange}
-                  amount={period?.start_balance}
+                  amount={period?.start_balance.toString()}
                   variant="plain"
                   id="amount"
                   name="amount"
@@ -278,7 +264,7 @@ export default function Period() {
             items={period?.expense_categories as Category[]}
             setPlannedAmount={handleExpenseCategoryPlannedAmount}
             createRow={createRow}
-            saveItem={saveExpenseCategory}
+            saveItem={(data: Category) => saveCategory("expense", data)}
             removeItem={removeExpenseCategory}
             type="expense"
           ></CategoryTable>
@@ -291,7 +277,7 @@ export default function Period() {
             items={period?.income_categories as Category[]}
             setPlannedAmount={handleIncomeCategoryPlannedAmount}
             createRow={createRow}
-            saveItem={saveIncomeCategory}
+            saveItem={(data: Category) => saveCategory("income", data)}
             removeItem={removeIncomeCategory}
             type="income"
           ></CategoryTable>
