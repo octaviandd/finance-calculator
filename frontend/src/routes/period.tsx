@@ -7,9 +7,7 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Input,
   Sheet,
-  Stack,
   Typography,
 } from "@mui/joy";
 import { Plus } from "react-feather";
@@ -26,9 +24,6 @@ export default function Period() {
   const { periodId } = useParams();
   const [period, setPeriod] = useState<MonthlyPeriod>();
   const { currency } = useContext(Store);
-  const [expensesCategories, setExpensesCategories] = useState<Category[]>([]);
-  const [incomesCategories, setIncomesCategories] = useState<Category[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
 
   const addExpenseCategory = (category: Category) => {
     setPeriod((prevState) => {
@@ -138,6 +133,7 @@ export default function Period() {
     categoryType: "income" | "expense",
     categoryId: string
   ) => {
+    console.log(categoryId, categoryType);
     let key = `${categoryType}_categories` as keyof MonthlyPeriod;
     serverRequest(
       "delete",

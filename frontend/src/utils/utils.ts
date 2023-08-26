@@ -103,7 +103,10 @@ export const serverRequest = async (
       method,
       url: `http://127.0.0.1:8000/${url}`,
       data,
-      headers: { Authorization: `Token ${token}` },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
     }).then((response) => {
       callback(response.data);
     });
