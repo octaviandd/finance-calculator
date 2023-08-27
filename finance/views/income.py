@@ -36,7 +36,7 @@ def create_income(request, id):
     return Response(serializer.data, 200)
 
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_income(request, id):
@@ -44,7 +44,7 @@ def delete_income(request, id):
 
     try:
         expense = Income.objects.get(id = expenseId)
-        expense.remove()
+        expense.delete()
     except (Income.DoesNotExist) as e:
         return Response({"error": "Income does not exist"}, status = 404)
     

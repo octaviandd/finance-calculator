@@ -36,7 +36,7 @@ def create_expense(request, id):
     return Response(serializer.data, status = 200)
 
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_expense(request, id):
@@ -44,7 +44,7 @@ def delete_expense(request, id):
 
     try:
         expense = Expense.objects.get(id = expenseId)
-        expense.remove()
+        expense.delete()
     except (Expense.DoesNotExist) as e:
         return Response({"error": "Expense does not exist"}, status = 404)
     

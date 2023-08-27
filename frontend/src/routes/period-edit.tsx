@@ -21,10 +21,72 @@ export default function PeriodEdit() {
       "get",
       `finance/monthly-period/${periodId}`,
       undefined,
-      (data: MonthlyPeriod) => {
-        console.log(data);
-        setPeriod(data);
-      },
+      (data: MonthlyPeriod) => setPeriod(data),
+      setError
+    );
+  };
+
+  const createRow = (
+    item: Income | Expense,
+    itemType: "incomes" | "expenses"
+  ) => {
+    setPeriod(
+      (prevState) =>
+        prevState && {
+          ...prevState,
+          [itemType]: [...prevState[itemType], item],
+        }
+    );
+  };
+
+  const removeRow = (itemType: "incomes" | "expenses") => {
+    setPeriod(
+      (prevState) =>
+        prevState && {
+          ...prevState,
+          [itemType]: [
+            prevState[itemType].filter((item) => item.status === "new"),
+          ],
+        }
+    );
+  };
+
+  const saveItem = (
+    data: Expense | Income,
+    itemType: "expenses" | "incomes"
+  ) => {
+    serverRequest(
+      "post",
+      `finance/monthly-period/${periodId}/save-${itemType}`,
+      data,
+      () =>
+        setPeriod(
+          (prevState) =>
+            prevState && {
+              ...prevState,
+              [itemType]: [...prevState[itemType], data],
+            }
+        ),
+      setError
+    );
+    removeRow(itemType);
+  };
+
+  const deleteItem = (itemId: string, itemType: "expenses" | "incomes") => {
+    serverRequest(
+      "delete",
+      `finance/monthly-period/${periodId}/delete-${itemType}`,
+      itemId,
+      () =>
+        setPeriod(
+          (prevState) =>
+            prevState && {
+              ...prevState,
+              [itemType]: prevState[itemType].filter(
+                (item: Expense | Income) => item.id !== itemId
+              ),
+            }
+        ),
       setError
     );
   };
@@ -64,52 +126,11 @@ export default function PeriodEdit() {
           </Typography>
           {period && (
             <Table
-              createRow={(item: Income) =>
-                setPeriod(
-                  (prevState) =>
-                    prevState && {
-                      ...prevState,
-                      expenses: [...prevState.expenses, item],
-                    }
-                )
-              }
-              type="expense"
+              createRow={(item: Income) => createRow(item, "expenses")}
               items={period.expenses}
               categories={period.expense_categories}
-              saveItem={(data: Expense) =>
-                serverRequest(
-                  "post",
-                  `finance/monthly-period/${periodId}/save-expense`,
-                  data,
-                  () =>
-                    setPeriod(
-                      (prevState) =>
-                        prevState && {
-                          ...prevState,
-                          expenses: [...prevState.expenses, data],
-                        }
-                    ),
-                  setError
-                )
-              }
-              removeItem={(expenseId: String) =>
-                serverRequest(
-                  "post",
-                  `finance/monthly-period/${periodId}/delete-expense`,
-                  expenseId,
-                  () =>
-                    setPeriod(
-                      (prevState) =>
-                        prevState && {
-                          ...prevState,
-                          expenses: prevState.expenses.filter(
-                            (expense) => expense.id === expenseId
-                          ),
-                        }
-                    ),
-                  setError
-                )
-              }
+              saveItem={(data: Expense) => saveItem(data, "expenses")}
+              removeItem={(id: string) => deleteItem(id, "expenses")}
             />
           )}
         </div>
@@ -119,52 +140,11 @@ export default function PeriodEdit() {
           </Typography>
           {period && (
             <Table
-              createRow={(item: Income) =>
-                setPeriod(
-                  (prevState) =>
-                    prevState && {
-                      ...prevState,
-                      incomes: [...prevState.incomes, item],
-                    }
-                )
-              }
-              type="income"
+              createRow={(item: Income) => createRow(item, "incomes")}
               items={period.incomes}
               categories={period.income_categories}
-              saveItem={(data: Income) =>
-                serverRequest(
-                  "post",
-                  `finance/monthly-period/${periodId}/save-income`,
-                  data,
-                  () =>
-                    setPeriod(
-                      (prevState) =>
-                        prevState && {
-                          ...prevState,
-                          incomes: [...prevState.incomes, data],
-                        }
-                    ),
-                  setError
-                )
-              }
-              removeItem={(incomeId: String) =>
-                serverRequest(
-                  "post",
-                  `finance/monthly-period/${periodId}/remove-income`,
-                  incomeId,
-                  () =>
-                    setPeriod(
-                      (prevState) =>
-                        prevState && {
-                          ...prevState,
-                          incomes: prevState.incomes.filter(
-                            (income) => income.id === incomeId
-                          ),
-                        }
-                    ),
-                  setError
-                )
-              }
+              saveItem={(data: Expense) => saveItem(data, "incomes")}
+              removeItem={(id: string) => deleteItem(id, "incomes")}
             />
           )}
         </div>

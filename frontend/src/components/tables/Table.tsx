@@ -5,28 +5,27 @@ import Button from "@mui/joy/Button";
 import Link from "@mui/joy/Link";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
+import { formatDate } from "../../utils/utils";
 import { Category } from "../../types/Category";
 import { Expense } from "../../types/Expense";
 import { Income } from "../../types/Income";
 import { Order } from "../../types/Order";
 import { Filters } from "../Filters";
-import { stableSort, getComparator, formatDate } from "../../utils/utils";
 import { Store } from "../../Store";
 import CategorySelector from "../inputs/Select";
 import AmountSelector from "../inputs/Number";
 import DateSelector from "../inputs/Date";
 import TextSelector from "../inputs/Text";
+import { v4 as uuidv4 } from "uuid";
 
 export default function OrderTable({
   createRow,
-  type,
   items,
   categories,
   saveItem,
   removeItem,
 }: {
   createRow: Function;
-  type: String;
   items: Expense[] | Income[];
   categories: Category[];
   saveItem: Function;
@@ -34,7 +33,6 @@ export default function OrderTable({
 }) {
   const [block, setBlock] = useState(false);
   const [order, setOrder] = useState<Order>("desc");
-  const [newItem, setNewItem] = useState();
   const { currency } = useContext(Store);
 
   const addRow = () => {
@@ -58,7 +56,6 @@ export default function OrderTable({
     form.preventDefault();
     const formData = new FormData(form.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
     saveItem(formJson);
     form.currentTarget.reset();
     setBlock(false);
@@ -118,52 +115,46 @@ export default function OrderTable({
               </tr>
             </thead>
             <tbody>
-              {stableSort(items, getComparator(order, "id")).map((row) => {
-                return (
-                  <tr key={row.id}>
-                    <td>
-                      <TextSelector input={row.title || ""} />
-                    </td>
-                    <td>
-                      <DateSelector row={row} />
-                    </td>
-                    <td>
-                      <AmountSelector
-                        amount={row.amount ? row.amount.toString() : "0"}
-                        currency={currency}
-                        variant="plain"
-                        id="amount"
-                        name="amount"
-                        required={true}
-                      />
-                    </td>
-                    <td>
-                      <CategorySelector categories={categories} row={row} />
-                    </td>
-                    <td>
-                      {row.status === "new" ? (
+              {items.map((row) => (
+                <tr key={uuidv4()}>
+                  <td>
+                    <TextSelector input={row.title || ""} />
+                  </td>
+                  <td>
+                    <DateSelector row={row} />
+                  </td>
+                  <td>
+                    <AmountSelector
+                      amount={row.amount ? row.amount.toString() : "0"}
+                      currency={currency}
+                      variant="plain"
+                      id="amount"
+                      name="amount"
+                      required={true}
+                    />
+                  </td>
+                  <td>
+                    <CategorySelector categories={categories} row={row} />
+                  </td>
+                  <td>
+                    {row.status === "new" ? (
+                      <Button variant="plain" sx={{ margin: 0 }} type="submit">
+                        Save
+                      </Button>
+                    ) : (
+                      <>
                         <Button
                           variant="plain"
-                          sx={{ margin: 0 }}
-                          type="submit"
+                          color="danger"
+                          onClick={() => removeItem(row.id)}
                         >
-                          Save
+                          Delete
                         </Button>
-                      ) : (
-                        <>
-                          <Button
-                            variant="plain"
-                            color="danger"
-                            onClick={() => removeItem(row.id)}
-                          >
-                            Delete
-                          </Button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </form>

@@ -9,45 +9,44 @@ import { Income } from "../../types/Income";
 type Props = {
   categories: Category[];
   row: Expense | Income;
+  onChange?: Function;
 };
 
-export default function SelectInput({ categories, row }: Props) {
+export default function SelectInput({ categories, row, onChange }: Props) {
   const [currentCategory, setCurrentCategory] = useState("");
+  const handleChange = (value: string) => {
+    setCurrentCategory(value);
+    onChange && onChange(value);
+  };
+
+  console.log(categories, row);
+
   return (
     <>
-      {row.status === "new" ? (
-        <FormControl size="sm">
-          <Select placeholder="All" id="category" name="category">
-            {categories.map((category) => (
-              <Option key={category.id} value={category.id}>
-                {category.title}
-              </Option>
-            ))}
-          </Select>
-        </FormControl>
-      ) : (
-        <FormControl size="sm">
-          <Select
-            id="category"
-            name="category"
-            value={
-              currentCategory ||
-              categories.find((category) => category.id == row.category.id)?.id
-            }
-            onChange={(_, newValue) => setCurrentCategory(newValue as string)}
-          >
-            {categories.map((category) => (
-              <Option
-                key={category.id}
-                label={category.title}
-                value={category.id}
-              >
-                {category.title}
-              </Option>
-            ))}
-          </Select>
-        </FormControl>
-      )}
+      <FormControl>
+        <Select
+          placeholder="All"
+          id="category"
+          name="category"
+          onChange={(_, newValue) => handleChange(newValue as string)}
+          value={
+            currentCategory
+              ? currentCategory
+              : categories.find((category) => category.id == row.category.id)
+                  ?.id
+          }
+        >
+          {categories.map((category) => (
+            <Option
+              key={category.id}
+              value={category.id}
+              label={category.title}
+            >
+              {category.title}
+            </Option>
+          ))}
+        </Select>
+      </FormControl>
     </>
   );
 }
