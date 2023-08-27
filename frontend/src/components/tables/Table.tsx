@@ -39,7 +39,6 @@ export default function OrderTable({
     if (!block) {
       let formattedDate = formatDate(new Date());
       let item = {
-        id: String(Math.floor(Math.random() * 0.5)),
         title: "",
         date: formattedDate,
         target: "",
@@ -134,7 +133,10 @@ export default function OrderTable({
                     />
                   </td>
                   <td>
-                    <CategorySelector categories={categories} row={row} />
+                    <CategorySelector
+                      categories={categories}
+                      categoryId={row?.category?.id}
+                    />
                   </td>
                   <td>
                     {row.status === "new" ? (

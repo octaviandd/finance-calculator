@@ -1,7 +1,7 @@
 /** @format */
 
 export type Category = {
-  id: string | number;
+  id: string;
   title: string;
   planned_amount: number;
   actual_amount: number;

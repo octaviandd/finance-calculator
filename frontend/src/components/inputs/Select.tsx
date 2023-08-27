@@ -1,25 +1,30 @@
 /** @format */
 
 import { FormControl, Select, Option } from "@mui/joy";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Category } from "../../types/Category";
-import { Expense } from "../../types/Expense";
-import { Income } from "../../types/Income";
 
 type Props = {
   categories: Category[];
-  row: Expense | Income;
-  onChange?: Function;
+  categoryId: string;
 };
 
-export default function SelectInput({ categories, row, onChange }: Props) {
-  const [currentCategory, setCurrentCategory] = useState("");
+export default function SelectInput({ categories, categoryId }: Props) {
+  const [currentCategory, setCurrentCategory] = useState<string>();
   const handleChange = (value: string) => {
-    setCurrentCategory(value);
-    onChange && onChange(value);
+    setCurrentCategory(
+      categories.find((category) => category.id === value)?.id
+    );
   };
 
-  console.log(categories, row);
+  useEffect(() => {
+    console.log(categoryId, categories);
+    if (categoryId) {
+      setCurrentCategory(
+        categories.find((category) => category.id === categoryId)?.id
+      );
+    }
+  }, [categoryId]);
 
   return (
     <>
@@ -28,13 +33,8 @@ export default function SelectInput({ categories, row, onChange }: Props) {
           placeholder="All"
           id="category"
           name="category"
-          onChange={(_, newValue) => handleChange(newValue as string)}
-          value={
-            currentCategory
-              ? currentCategory
-              : categories.find((category) => category.id == row.category.id)
-                  ?.id
-          }
+          onChange={(_, newValue) => newValue && handleChange(newValue)}
+          value={currentCategory}
         >
           {categories.map((category) => (
             <Option

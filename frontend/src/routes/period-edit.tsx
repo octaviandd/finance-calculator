@@ -39,18 +39,6 @@ export default function PeriodEdit() {
     );
   };
 
-  const removeRow = (itemType: "incomes" | "expenses") => {
-    setPeriod(
-      (prevState) =>
-        prevState && {
-          ...prevState,
-          [itemType]: [
-            prevState[itemType].filter((item) => item.status === "new"),
-          ],
-        }
-    );
-  };
-
   const saveItem = (
     data: Expense | Income,
     itemType: "expenses" | "incomes"
@@ -59,17 +47,19 @@ export default function PeriodEdit() {
       "post",
       `finance/monthly-period/${periodId}/save-${itemType}`,
       data,
-      () =>
+      (item: Expense | Income) => {
         setPeriod(
           (prevState) =>
             prevState && {
               ...prevState,
-              [itemType]: [...prevState[itemType], data],
+              [itemType]: prevState[itemType]
+                .concat(item)
+                .filter((item) => item.status !== "new"),
             }
-        ),
+        );
+      },
       setError
     );
-    removeRow(itemType);
   };
 
   const deleteItem = (itemId: string, itemType: "expenses" | "incomes") => {
