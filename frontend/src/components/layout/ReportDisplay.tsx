@@ -1,17 +1,18 @@
 /** @format */
 
-import React from "react";
-import { Currency } from "../../types/Currency";
+import React, { useContext } from "react";
 import { Stack } from "@mui/joy";
 import { MonthlyPeriod } from "../../types/MonthlyPeriod";
+import { Store } from "../../Store";
 
 type Props = {
-  currency: Currency;
   period: MonthlyPeriod;
   totalSaved: number;
 };
 
-export default function ReportDisplay({ currency, period, totalSaved }: Props) {
+export default function ReportDisplay({ period, totalSaved }: Props) {
+  const { currency } = useContext(Store);
+
   return (
     <Stack
       direction="row"
@@ -28,7 +29,7 @@ export default function ReportDisplay({ currency, period, totalSaved }: Props) {
             <p className="text-xl text-[#334960]">START BALANCE</p>
             <p className="text-right text-[#334960] italic">
               {currency.symbol}
-              {period?.start_balance && period.start_balance.toFixed(2)}
+              {(period.start_balance * currency.rate).toFixed(2)}
             </p>
           </div>
         </div>
@@ -38,8 +39,7 @@ export default function ReportDisplay({ currency, period, totalSaved }: Props) {
             <p className="text-xl text-[#F46524]">END BALANCE</p>
             <p className="italic text-[#F46524]">
               {currency.symbol}
-              {period?.monthly_end_balance &&
-                period.monthly_end_balance.toFixed(2)}
+              {(period.monthly_end_balance * currency.rate).toFixed(2)}
             </p>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default function ReportDisplay({ currency, period, totalSaved }: Props) {
         <div className="border-b border-dashed border-neutral-400 pb-5">
           <p className="text-3xl text-center">
             {currency.symbol}
-            {totalSaved.toFixed(2)}
+            {(totalSaved * currency.rate).toFixed(2)}
           </p>
           <p className="text-center">Increase in total savings</p>
           <p>
@@ -58,8 +58,7 @@ export default function ReportDisplay({ currency, period, totalSaved }: Props) {
         <div className="pt-6">
           <p className="text-3xl text-center">
             {currency.symbol}
-            {period?.monthly_saved_this_month &&
-              period.monthly_saved_this_month.toFixed(2)}
+            {(period.monthly_saved_this_month * currency.rate).toFixed(2)}
           </p>
           <p className="text-center">Saved this month</p>
         </div>

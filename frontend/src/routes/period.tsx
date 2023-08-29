@@ -40,6 +40,7 @@ export default function Period() {
       `finance/monthly-period/${periodId}`,
       undefined,
       (data: MonthlyPeriod) => {
+        console.log(data);
         setPeriod(data);
       },
       setError
@@ -135,6 +136,63 @@ export default function Period() {
     getMonthlyPeriod();
   }, []);
 
+  useEffect(() => {
+    setPeriod((prevState) => {
+      if (prevState) {
+        return {
+          ...prevState,
+          incomes: prevState.incomes.map((income) => ({
+            ...income,
+            amount: parseFloat((income.amount * currency.rate).toFixed(2)),
+            category: {
+              ...income.category,
+              actual_amount: parseFloat(
+                (income.category.actual_amount * currency.rate).toFixed(2)
+              ),
+              planned_amount: parseFloat(
+                (income.category.planned_amount * currency.rate).toFixed(2)
+              ),
+            },
+          })),
+          income_categories: prevState.income_categories.map((income) => ({
+            ...income,
+            planned_amount: parseFloat(
+              (income.planned_amount * currency.rate).toFixed(2)
+            ),
+            actual_amount: parseFloat(
+              (income.actual_amount * currency.rate).toFixed(2)
+            ),
+          })),
+          expenses: prevState.expenses.map((expense) => ({
+            ...expense,
+            amount: parseFloat((expense.amount * currency.rate).toFixed(2)),
+            category: {
+              ...expense.category,
+              actual_amount: parseFloat(
+                (expense.category.actual_amount * currency.rate).toFixed(2)
+              ),
+              planned_amount: parseFloat(
+                (expense.category.planned_amount * currency.rate).toFixed(2)
+              ),
+            },
+          })),
+          expense_categories: prevState.expense_categories.map((expense) => ({
+            ...expense,
+            planned_amount: parseFloat(
+              (expense.planned_amount * currency.rate).toFixed(2)
+            ),
+            actual_amount: parseFloat(
+              (expense.actual_amount * currency.rate).toFixed(2)
+            ),
+          })),
+          start_balance: parseFloat(
+            (prevState.start_balance * currency.rate).toFixed(2)
+          ),
+        };
+      }
+    });
+  }, [currency]);
+
   return (
     <Sheet
       sx={{
@@ -164,7 +222,7 @@ export default function Period() {
                   currency={currency}
                   placeholder="999.99"
                   onChange={debouncedHandleStartBalanceChange}
-                  amount={period?.start_balance.toString()}
+                  amount={period.start_balance.toString()}
                   variant="plain"
                   id="amount"
                   name="amount"
@@ -192,11 +250,7 @@ export default function Period() {
       </Box>
 
       {period && (
-        <ReportDisplay
-          currency={currency}
-          period={period}
-          totalSaved={state.totalSaved}
-        />
+        <ReportDisplay period={period} totalSaved={state.totalSaved} />
       )}
 
       <Box

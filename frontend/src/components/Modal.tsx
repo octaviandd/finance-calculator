@@ -47,6 +47,7 @@ export default function BasicModal({
       (data: { data: { EUR: number; GBP: number; USD: number } }) => {
         setLoading(false);
         rate = data.data[currency] || 1;
+        console.log(symbol, currency, rate, title);
         localStorage.setItem(
           "currency",
           JSON.stringify({ symbol, currency, rate, title })
@@ -160,7 +161,7 @@ export default function BasicModal({
                 handleCurrencyChange({
                   symbol: "$",
                   currency: "USD",
-                  title: "pound",
+                  title: "dollar",
                 })
               }
             >

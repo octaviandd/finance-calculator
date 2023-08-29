@@ -1,7 +1,6 @@
 /** @format */
 
 import React, { useContext, useEffect, useState } from "react";
-import { styled } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";

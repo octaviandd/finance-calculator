@@ -4,7 +4,7 @@ import { Category } from "./Category";
 import { Expense } from "./Expense";
 import { Income } from "./Income";
 export type MonthlyPeriod = {
-  id: number | string;
+  id: string;
   title: string;
   from_date: Date;
   to_date: Date;

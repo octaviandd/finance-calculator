@@ -10,8 +10,7 @@ export default function Periods({ period }: { period: Period }) {
       {period &&
         period.monthly_periods
           .sort(
-            (a: MonthlyPeriod, b: MonthlyPeriod) =>
-              (a.id as number) - (b.id as number)
+            (a: MonthlyPeriod, b: MonthlyPeriod) => Number(a.id) - Number(b.id)
           )
           .map((item: MonthlyPeriod) => (
             <PeriodContainer
