@@ -1,7 +1,5 @@
 from django.db import models
-from django.db.models import Sum
-from . import Category
-
+from .category import Category
 
 class MonthlyPeriod(models.Model):
     title = models.CharField(max_length=30)
@@ -14,7 +12,7 @@ class MonthlyPeriod(models.Model):
     def monthly_total_planned_expenses_amount(self):
         return (
             self.categories.filter(category_type="expense").aggregate(
-                total=Sum("planned_amount")
+                total=models.Sum("planned_amount")
             )["total"]
             or 0
         )
@@ -22,7 +20,7 @@ class MonthlyPeriod(models.Model):
     def monthly_total_planned_incomes_amount(self):
         return (
             self.categories.filter(category_type="income").aggregate(
-                total=Sum("planned_amount")
+                total=models.Sum("planned_amount")
             )["total"]
             or 0
         )

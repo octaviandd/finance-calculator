@@ -1,6 +1,6 @@
 from django.db import models
-from . import YearlyPeriod
-
+from .yearly_period import YearlyPeriod
+from django.contrib.auth.models import User
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

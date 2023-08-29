@@ -15,6 +15,6 @@ class Category(models.Model):
 
     def actual_amount(self):
         if self.category_type == "income":
-            return self.incomes_set.aggregate(total=Sum("amount"))["total"] or 0
+            return self.incomes_set.aggregate(total=models.Sum("amount"))["total"] or 0
         else:
-            return self.expenses_set.aggregate(total=Sum("amount"))["total"] or 0
+            return self.expenses_set.aggregate(total=models.Sum("amount"))["total"] or 0

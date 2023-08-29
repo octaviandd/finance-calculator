@@ -139,7 +139,11 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
 
 class YearlyPeriodSerializer(serializers.ModelSerializer):
     monthly_periods = MonthlyPeriodSerializer(many=True, read_only=True)
+    total_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = YearlyPeriod
-        fields = ["id", "title", "monthly_periods"]
+        fields = ["id", "title", "monthly_periods", 'total_saved']
+    
+    def get_total_saved(self, obj):
+        return obj.total_saved()

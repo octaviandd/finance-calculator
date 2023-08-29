@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from . import Category
+from .category import Category
 from django.db import models
 
 

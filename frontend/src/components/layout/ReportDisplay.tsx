@@ -52,7 +52,7 @@ export default function ReportDisplay({ currency, period }: Props) {
           </p>
           <p className="text-center">Increase in total savings</p>
           <p>
-            <small>Accumulated from previous months</small>
+            <small>Accumulated from the months of the current year</small>
           </p>
         </div>
         <div className="pt-6">
