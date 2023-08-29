@@ -48,8 +48,7 @@ export default function ReportTable({
 
   const onSubmit = (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
-    const formData = new FormData(form.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
+    const formJson = Object.fromEntries(new FormData(form.currentTarget));
     saveItem(formJson);
     form.currentTarget.reset();
     setBlock(false);
