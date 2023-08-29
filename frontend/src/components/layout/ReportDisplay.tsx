@@ -8,10 +8,10 @@ import { MonthlyPeriod } from "../../types/MonthlyPeriod";
 type Props = {
   currency: Currency;
   period: MonthlyPeriod;
+  totalSaved: number;
 };
 
-export default function ReportDisplay({ currency, period }: Props) {
-  console.log(period);
+export default function ReportDisplay({ currency, period, totalSaved }: Props) {
   return (
     <Stack
       direction="row"
@@ -48,7 +48,7 @@ export default function ReportDisplay({ currency, period }: Props) {
         <div className="border-b border-dashed border-neutral-400 pb-5">
           <p className="text-3xl text-center">
             {currency.symbol}
-            {0}
+            {totalSaved.toFixed(2)}
           </p>
           <p className="text-center">Increase in total savings</p>
           <p>

@@ -12,7 +12,7 @@ import Period from "./routes/period";
 import LoginPage from "./routes/login";
 import RegisterPage from "./routes/register";
 import PeriodEdit from "./routes/period-edit";
-import Profile from "./components/Profile";
+import Profile from "./routes/profile";
 
 const router = createBrowserRouter([
   {

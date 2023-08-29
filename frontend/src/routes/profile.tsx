@@ -7,7 +7,7 @@ import Typography from "@mui/joy/Typography";
 import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
-import Periods from "./layout/Periods";
+import Periods from "../components/layout/Periods";
 import { Button, TabPanel } from "@mui/joy";
 import { useState, useEffect } from "react";
 import { serverRequest } from "../utils/utils";

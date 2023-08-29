@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -22,6 +22,7 @@ import ReportDisplay from "../components/layout/ReportDisplay";
 export default function Period() {
   const [error, setError] = useState(false);
   const { periodId } = useParams();
+  const { state } = useLocation();
   const [period, setPeriod] = useState<MonthlyPeriod>();
   const { currency } = useContext(Store);
 
@@ -190,7 +191,13 @@ export default function Period() {
         </Link>
       </Box>
 
-      {period && <ReportDisplay currency={currency} period={period} />}
+      {period && (
+        <ReportDisplay
+          currency={currency}
+          period={period}
+          totalSaved={state.totalSaved}
+        />
+      )}
 
       <Box
         sx={{

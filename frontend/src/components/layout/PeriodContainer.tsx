@@ -12,7 +12,13 @@ import dayjs from "dayjs";
 import { Store } from "../../Store";
 import { useContext } from "react";
 
-export default function BasicCard({ period }: { period: MonthlyPeriod }) {
+export default function BasicCard({
+  period,
+  totalSaved,
+}: {
+  period: MonthlyPeriod;
+  totalSaved: number;
+}) {
   const { currency } = useContext(Store);
   return (
     <Card variant="outlined" sx={{ width: 370 }}>
@@ -52,7 +58,10 @@ export default function BasicCard({ period }: { period: MonthlyPeriod }) {
             marginLeft: "auto",
           }}
         >
-          <Link to={`/monthly-period/${period.id}`}>
+          <Link
+            to={`/monthly-period/${period.id}`}
+            state={{ totalSaved: totalSaved }}
+          >
             <Button
               variant="solid"
               size="sm"

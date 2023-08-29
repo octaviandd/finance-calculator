@@ -14,7 +14,11 @@ export default function Periods({ period }: { period: Period }) {
               (a.id as number) - (b.id as number)
           )
           .map((item: MonthlyPeriod) => (
-            <PeriodContainer key={item.id} period={item} />
+            <PeriodContainer
+              key={item.id}
+              period={item}
+              totalSaved={period.total_saved}
+            />
           ))}
     </div>
   );
