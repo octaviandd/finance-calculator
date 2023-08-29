@@ -18,7 +18,6 @@ export default function SelectInput({ categories, categoryId }: Props) {
   };
 
   useEffect(() => {
-    console.log(categoryId, categories);
     if (categoryId) {
       setCurrentCategory(
         categories.find((category) => category.id === categoryId)?.id

@@ -33,37 +33,35 @@ export default function Period() {
     );
   };
 
-  const getMonthlyPeriod = async () => {
+  const getMonthlyPeriod = (): void => {
     serverRequest(
       "get",
       `finance/monthly-period/${periodId}`,
       undefined,
       (data: MonthlyPeriod) => {
-        console.log(data);
         setPeriod(data);
       },
       setError
     );
   };
 
-  const handleStartBalanceChange = (value: string) =>
+  const debouncedHandleStartBalanceChange = debounce((value: string) => {
     setPeriod(
       (prevState) =>
         prevState && { ...prevState, start_balance: parseFloat(value) }
     );
 
-  const saveStartBalance = () => {
     serverRequest(
       "post",
       `finance/monthly-period/${periodId}/update-starting-balance`,
-      { start_balance: period?.start_balance },
-      (data: number) => console.log(data),
+      { amount: parseFloat(value) },
+      (data: string) => console.log(data),
       setError
     );
-  };
+  }, 500);
 
   const debouncedHandleCategoryPlannedAmount = debounce(
-    (id: string, value: string, categoryType: string) => {
+    (id: string, value: string, categoryType: string): void => {
       let key = `${categoryType}_categories` as keyof MonthlyPeriod;
       setPeriod(
         (prevState) =>
@@ -91,7 +89,7 @@ export default function Period() {
   );
 
   const debouncedSaveCategory = debounce(
-    (categoryType: "income" | "expense", category: Category) => {
+    (categoryType: "income" | "expense", category: Category): void => {
       let key = `${categoryType}_categories` as keyof MonthlyPeriod;
       serverRequest(
         "post",
@@ -109,11 +107,10 @@ export default function Period() {
     500
   );
 
-  const removeCategory = async (
+  const removeCategory = (
     categoryType: "income" | "expense",
     categoryId: string
-  ) => {
-    console.log(categoryId, categoryType);
+  ): void => {
     let key = `${categoryType}_categories` as keyof MonthlyPeriod;
     serverRequest(
       "delete",
@@ -125,7 +122,7 @@ export default function Period() {
             prevState && {
               ...prevState,
               [key]: prevState[key].filter(
-                (item: Category) => item.id === categoryId
+                (item: Category) => item.id !== categoryId
               ),
             }
         ),
@@ -165,7 +162,7 @@ export default function Period() {
                   slotProps={{ input: { step: 1 } }}
                   currency={currency}
                   placeholder="999.99"
-                  onChange={handleStartBalanceChange}
+                  onChange={debouncedHandleStartBalanceChange}
                   amount={period?.start_balance.toString()}
                   variant="plain"
                   id="amount"
@@ -176,15 +173,6 @@ export default function Period() {
                   variant="plain"
                   sx={{ margin: 0, marginLeft: "6px" }}
                   type="submit"
-                  onClick={() => saveStartBalance()}
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="plain"
-                  sx={{ margin: 0, marginLeft: "6px" }}
-                  type="submit"
-                  onClick={() => saveStartBalance()}
                 >
                   End balance from previous month
                 </Button>

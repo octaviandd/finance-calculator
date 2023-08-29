@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
+from termcolor import colored
 
 CATEGORY_TYPE_CHOICES = (
     ('income', 'Income'),
@@ -13,7 +14,12 @@ class Category(models.Model):
     category_type = models.CharField(max_length=10, choices=CATEGORY_TYPE_CHOICES, default='income')
 
     def actual_amount(self):
-        return self.expenses_set.aggregate(total = Sum('amount'))['total'] or 0
+        if(self.category_type == 'income'):
+            return self.incomes_set.aggregate(total = Sum('amount'))['total'] or 0
+        else:
+            return self.expenses_set.aggregate(total = Sum('amount'))['total'] or 0
+    
+    
 
 class Expense(models.Model):
     title = models.CharField(max_length=50)
@@ -52,13 +58,13 @@ class MonthlyPeriod(models.Model):
     def monthly_total_actual_expenses_amount(self):
         total = 0
         for category in self.categories.filter(category_type = 'expense'):
-            total += category.expenses_set.aggregate(total = Sum('amount'))['total'] or 0
+            total += category.actual_amount()
         return total
     
     def monthly_total_actual_incomes_amount(self):
         total = 0
-        for category in self.categories.filter(category_type = 'expense'):
-            total += category.incomes_set.aggregate(total = Sum('amount'))['total'] or 0
+        for category in self.categories.filter(category_type = 'income'):
+            total += category.actual_amount()
         return total
     
     def monthly_saved_this_month(self):

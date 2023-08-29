@@ -13,6 +13,7 @@ import { Filters } from "../Filters";
 import { Button } from "@mui/joy";
 import TextSelector from "../inputs/Text";
 import AmountSelector from "../inputs/Number";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ReportTable({
   items,
@@ -110,7 +111,7 @@ export default function ReportTable({
             <tbody>
               {items &&
                 items.map((row) => (
-                  <tr key={row.id}>
+                  <tr key={uuidv4()}>
                     <td>
                       <TextSelector input={row.title || ""} />
                     </td>
@@ -129,6 +130,7 @@ export default function ReportTable({
                           },
                         }}
                         onChange={(value: string) =>
+                          row.status !== "new" &&
                           setPlannedAmount(row.id, value)
                         }
                         id="amount"
@@ -141,9 +143,15 @@ export default function ReportTable({
                       {currency.symbol}
                       {row.actual_amount || 0}
                     </td>
-                    <td>
+                    <td
+                      style={
+                        row.actual_amount - row.planned_amount > 0
+                          ? { color: "green" }
+                          : { color: "red" }
+                      }
+                    >
                       {currency.symbol}
-                      {row.planned_amount - row.actual_amount || 0}
+                      {row.actual_amount - row.planned_amount || 0}
                     </td>
                     <td>
                       {row.status === "new" ? (

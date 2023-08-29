@@ -27,7 +27,8 @@ def edit_monthly_period(request, id):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def update_monthly_starting_balance(request, id):
-    start_balance = request.data.get('start_balance')
+    print(request.data)
+    start_balance = request.data.get('amount')
     monthly_period = MonthlyPeriod.objects.get(pk = id)
 
     try:

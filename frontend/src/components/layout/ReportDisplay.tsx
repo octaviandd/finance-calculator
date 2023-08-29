@@ -11,6 +11,7 @@ type Props = {
 };
 
 export default function ReportDisplay({ currency, period }: Props) {
+  console.log(period);
   return (
     <Stack
       direction="row"
