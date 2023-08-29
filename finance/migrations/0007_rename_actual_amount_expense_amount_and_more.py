@@ -4,51 +4,56 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('finance', '0006_remove_category_description'),
+        ("finance", "0006_remove_category_description"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='expense',
-            old_name='actual_amount',
-            new_name='amount',
+            model_name="expense",
+            old_name="actual_amount",
+            new_name="amount",
         ),
         migrations.RenameField(
-            model_name='income',
-            old_name='actual_amount',
-            new_name='amount',
+            model_name="income",
+            old_name="actual_amount",
+            new_name="amount",
         ),
         migrations.RemoveField(
-            model_name='expense',
-            name='planned_amount',
+            model_name="expense",
+            name="planned_amount",
         ),
         migrations.RemoveField(
-            model_name='income',
-            name='planned_amount',
+            model_name="income",
+            name="planned_amount",
         ),
         migrations.RemoveField(
-            model_name='monthlyperiod',
-            name='expenses',
+            model_name="monthlyperiod",
+            name="expenses",
         ),
         migrations.RemoveField(
-            model_name='monthlyperiod',
-            name='incomes',
+            model_name="monthlyperiod",
+            name="incomes",
         ),
         migrations.AddField(
-            model_name='category',
-            name='category_type',
-            field=models.CharField(choices=[('income', 'Income'), ('expense', 'Expense')], default='income', max_length=10),
+            model_name="category",
+            name="category_type",
+            field=models.CharField(
+                choices=[("income", "Income"), ("expense", "Expense")],
+                default="income",
+                max_length=10,
+            ),
         ),
         migrations.AddField(
-            model_name='category',
-            name='planned_amount',
+            model_name="category",
+            name="planned_amount",
             field=models.FloatField(default=0),
         ),
         migrations.AddField(
-            model_name='monthlyperiod',
-            name='categories',
-            field=models.ManyToManyField(related_name='monthly_periods', to='finance.category'),
+            model_name="monthlyperiod",
+            name="categories",
+            field=models.ManyToManyField(
+                related_name="monthly_periods", to="finance.category"
+            ),
         ),
     ]

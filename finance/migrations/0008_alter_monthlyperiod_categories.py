@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('finance', '0007_rename_actual_amount_expense_amount_and_more'),
+        ("finance", "0007_rename_actual_amount_expense_amount_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='monthlyperiod',
-            name='categories',
-            field=models.ManyToManyField(related_name='monthly_categories', to='finance.category'),
+            model_name="monthlyperiod",
+            name="categories",
+            field=models.ManyToManyField(
+                related_name="monthly_categories", to="finance.category"
+            ),
         ),
     ]

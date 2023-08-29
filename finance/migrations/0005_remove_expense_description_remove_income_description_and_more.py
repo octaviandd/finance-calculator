@@ -4,38 +4,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('finance', '0004_remove_monthlyperiod_end_balance_and_more'),
+        ("finance", "0004_remove_monthlyperiod_end_balance_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='expense',
-            name='description',
+            model_name="expense",
+            name="description",
         ),
         migrations.RemoveField(
-            model_name='income',
-            name='description',
+            model_name="income",
+            name="description",
         ),
         migrations.AlterField(
-            model_name='expense',
-            name='actual_amount',
+            model_name="expense",
+            name="actual_amount",
             field=models.FloatField(default=0),
         ),
         migrations.AlterField(
-            model_name='expense',
-            name='planned_amount',
+            model_name="expense",
+            name="planned_amount",
             field=models.FloatField(default=0),
         ),
         migrations.AlterField(
-            model_name='income',
-            name='actual_amount',
+            model_name="income",
+            name="actual_amount",
             field=models.FloatField(default=0),
         ),
         migrations.AlterField(
-            model_name='income',
-            name='planned_amount',
+            model_name="income",
+            name="planned_amount",
             field=models.FloatField(default=0),
         ),
     ]

@@ -4,26 +4,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('finance', '0003_alter_expense_planned_amount_and_more'),
+        ("finance", "0003_alter_expense_planned_amount_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='monthlyperiod',
-            name='end_balance',
+            model_name="monthlyperiod",
+            name="end_balance",
         ),
         migrations.RemoveField(
-            model_name='monthlyperiod',
-            name='total_income',
+            model_name="monthlyperiod",
+            name="total_income",
         ),
         migrations.RemoveField(
-            model_name='monthlyperiod',
-            name='total_saved_this_period',
+            model_name="monthlyperiod",
+            name="total_saved_this_period",
         ),
         migrations.RemoveField(
-            model_name='monthlyperiod',
-            name='total_savings',
+            model_name="monthlyperiod",
+            name="total_savings",
         ),
     ]

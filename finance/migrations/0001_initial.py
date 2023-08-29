@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,68 +14,158 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('description', models.CharField(max_length=20)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("description", models.CharField(max_length=20)),
             ],
         ),
         migrations.CreateModel(
-            name='Expense',
+            name="Expense",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('description', models.CharField(max_length=200)),
-                ('planned_amount', models.FloatField()),
-                ('actual_amount', models.FloatField()),
-                ('date', models.DateTimeField(null=True)),
-                ('category_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='expenses_set', to='finance.category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("description", models.CharField(max_length=200)),
+                ("planned_amount", models.FloatField()),
+                ("actual_amount", models.FloatField()),
+                ("date", models.DateTimeField(null=True)),
+                (
+                    "category_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="expenses_set",
+                        to="finance.category",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Income',
+            name="Income",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('description', models.CharField(max_length=200)),
-                ('planned_amount', models.FloatField()),
-                ('actual_amount', models.FloatField()),
-                ('date', models.DateTimeField(null=True)),
-                ('category_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='incomes_set', to='finance.category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("description", models.CharField(max_length=200)),
+                ("planned_amount", models.FloatField()),
+                ("actual_amount", models.FloatField()),
+                ("date", models.DateTimeField(null=True)),
+                (
+                    "category_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="incomes_set",
+                        to="finance.category",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MonthlyPeriod',
+            name="MonthlyPeriod",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('from_date', models.DateField(null=True)),
-                ('to_date', models.DateField(null=True)),
-                ('total_spend', models.FloatField(default=0)),
-                ('total_income', models.FloatField(default=0)),
-                ('total_savings', models.FloatField(default=0)),
-                ('total_saved_this_period', models.FloatField(default=0)),
-                ('start_balance', models.FloatField(default=0)),
-                ('end_balance', models.FloatField(default=0)),
-                ('expenses', models.ManyToManyField(related_name='period_expense_set', to='finance.expense')),
-                ('incomes', models.ManyToManyField(related_name='period_incomes_set', to='finance.income')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("from_date", models.DateField(null=True)),
+                ("to_date", models.DateField(null=True)),
+                ("total_spend", models.FloatField(default=0)),
+                ("total_income", models.FloatField(default=0)),
+                ("total_savings", models.FloatField(default=0)),
+                ("total_saved_this_period", models.FloatField(default=0)),
+                ("start_balance", models.FloatField(default=0)),
+                ("end_balance", models.FloatField(default=0)),
+                (
+                    "expenses",
+                    models.ManyToManyField(
+                        related_name="period_expense_set", to="finance.expense"
+                    ),
+                ),
+                (
+                    "incomes",
+                    models.ManyToManyField(
+                        related_name="period_incomes_set", to="finance.income"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='YearlyPeriod',
+            name="YearlyPeriod",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('monthly_periods', models.ManyToManyField(related_name='period_months_set', to='finance.monthlyperiod')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                (
+                    "monthly_periods",
+                    models.ManyToManyField(
+                        related_name="period_months_set", to="finance.monthlyperiod"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('periods', models.ManyToManyField(related_name='yearly_periods_set', to='finance.yearlyperiod')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "periods",
+                    models.ManyToManyField(
+                        related_name="yearly_periods_set", to="finance.yearlyperiod"
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
