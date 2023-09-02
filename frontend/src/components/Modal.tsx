@@ -27,7 +27,7 @@ export default function BasicModal({
 }) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { setCurrency } = useContext(Store);
+  const { setGlobalCurrency } = useContext(Store);
   const [localCurrencies, setLocalCurrencies] = useState([]);
 
   const getCurrencies = () => {
@@ -53,7 +53,7 @@ export default function BasicModal({
       `finance/set-currency`,
       currencyId,
       (data: any) => {
-        setCurrency(data);
+        setGlobalCurrency(data);
         setLoading(false);
         setOpen(false);
       },

@@ -1,12 +1,12 @@
 /** @format */
 
 import { Input } from "@mui/joy";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Currency } from "../../types/Currency";
+import { Store } from "../../Store";
 
 type Props = {
   amount?: string;
-  currency: Currency;
   onChange?: Function;
   placeholder?: string;
   slotProps?: object;
@@ -18,7 +18,6 @@ type Props = {
 
 export default function NumberInput({
   amount = "",
-  currency,
   placeholder = "0",
   onChange,
   slotProps = {},
@@ -27,6 +26,7 @@ export default function NumberInput({
   required = false,
   variant,
 }: Props) {
+  const { currency } = useContext(Store);
   const [value, setValue] = useState("0");
   const handleChange = (value: string) => {
     setValue(value);
@@ -34,6 +34,7 @@ export default function NumberInput({
   };
 
   useEffect(() => {
+    console.log(currency);
     if (amount) {
       setValue(amount);
     }
@@ -55,7 +56,7 @@ export default function NumberInput({
           pound: currency.symbol,
           dollar: currency.symbol,
           euro: currency.symbol,
-        }[currency.title]
+        }[currency.label]
       }
     />
   );

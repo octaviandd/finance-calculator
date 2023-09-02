@@ -11,7 +11,6 @@ import { Expense } from "../../types/Expense";
 import { Income } from "../../types/Income";
 import { Order } from "../../types/Order";
 import { Filters } from "../Filters";
-import { Store } from "../../Store";
 import CategorySelector from "../inputs/Select";
 import AmountSelector from "../inputs/Number";
 import DateSelector from "../inputs/Date";
@@ -33,7 +32,6 @@ export default function OrderTable({
 }) {
   const [block, setBlock] = useState(false);
   const [order, setOrder] = useState<Order>("desc");
-  const { currency } = useContext(Store);
 
   const addRow = () => {
     if (!block) {
@@ -125,7 +123,6 @@ export default function OrderTable({
                   <td>
                     <AmountSelector
                       amount={row.amount ? row.amount.toString() : "0"}
-                      currency={currency}
                       variant="plain"
                       id="amount"
                       name="amount"

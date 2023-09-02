@@ -133,63 +133,6 @@ export default function Period() {
 
   useEffect(() => {
     getMonthlyPeriod();
-  }, []);
-
-  useEffect(() => {
-    setPeriod((prevState) => {
-      if (prevState) {
-        return {
-          ...prevState,
-          incomes: prevState.incomes.map((income) => ({
-            ...income,
-            amount: parseFloat((income.amount * currency.rate).toFixed(2)),
-            category: {
-              ...income.category,
-              actual_amount: parseFloat(
-                (income.category.actual_amount * currency.rate).toFixed(2)
-              ),
-              planned_amount: parseFloat(
-                (income.category.planned_amount * currency.rate).toFixed(2)
-              ),
-            },
-          })),
-          income_categories: prevState.income_categories.map((income) => ({
-            ...income,
-            planned_amount: parseFloat(
-              (income.planned_amount * currency.rate).toFixed(2)
-            ),
-            actual_amount: parseFloat(
-              (income.actual_amount * currency.rate).toFixed(2)
-            ),
-          })),
-          expenses: prevState.expenses.map((expense) => ({
-            ...expense,
-            amount: parseFloat((expense.amount * currency.rate).toFixed(2)),
-            category: {
-              ...expense.category,
-              actual_amount: parseFloat(
-                (expense.category.actual_amount * currency.rate).toFixed(2)
-              ),
-              planned_amount: parseFloat(
-                (expense.category.planned_amount * currency.rate).toFixed(2)
-              ),
-            },
-          })),
-          expense_categories: prevState.expense_categories.map((expense) => ({
-            ...expense,
-            planned_amount: parseFloat(
-              (expense.planned_amount * currency.rate).toFixed(2)
-            ),
-            actual_amount: parseFloat(
-              (expense.actual_amount * currency.rate).toFixed(2)
-            ),
-          })),
-          start_balance: parseFloat(
-            (prevState.start_balance * currency.rate).toFixed(2)
-          ),
-        };
-      }
-    });
   }, [currency]);
 
   return (
@@ -218,7 +161,6 @@ export default function Period() {
               <Box sx={{ display: "flex" }}>
                 <AmountSelector
                   slotProps={{ input: { step: 1 } }}
-                  currency={currency}
                   placeholder="999.99"
                   onChange={debouncedHandleStartBalanceChange}
                   amount={period.start_balance.toString()}

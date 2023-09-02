@@ -5,9 +5,9 @@ from django.db import migrations, models
 
 def create_initial_currencies(apps, scheme_editor):
     Currency = apps.get_model("finance", "Currency")
-    Currency.objects.create(title="Pound Sterling", symbol="£", rate=1, code="GBP")
-    Currency.objects.create(title="Euro", symbol="€", rate=1.1, code="EUR")
-    Currency.objects.create(title="US Dollar", symbol="$", rate=1.3, code="USD")
+    Currency.objects.create(title="Pound Sterling", label="pound", symbol="£", rate=1, code="GBP")
+    Currency.objects.create(title="Euro", label="euro", symbol="€", rate=1.1, code="EUR")
+    Currency.objects.create(title="US Dollar", label="dollar", symbol="$", rate=1.3, code="USD")
 
 
 class Migration(migrations.Migration):
@@ -29,6 +29,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("title", models.CharField(max_length=50)),
+                ('label', models.CharField(max_length=50)),
                 ("symbol", models.CharField(max_length=50)),
                 ("rate", models.FloatField(default=1)),
                 ("code", models.CharField(max_length=50)),

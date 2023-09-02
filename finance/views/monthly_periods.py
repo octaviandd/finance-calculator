@@ -16,8 +16,12 @@ from ..models import MonthlyPeriod
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def get_monthly_period(request, id):
+    print(request.session.session_key)
     monthly_period = MonthlyPeriod.objects.get(id=id)
-    serializer = MonthlyPeriodSerializer(monthly_period, many=False)
+    currency = request.session.get("currency")
+    serializer = MonthlyPeriodSerializer(
+        monthly_period, context={"currency": currency}, many=False
+    )
     return Response(serializer.data, status=200)
 
 
@@ -25,8 +29,8 @@ def get_monthly_period(request, id):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def edit_monthly_period(request, id):
-    yearly_period = MonthlyPeriod.objects.get(id=id)
-    serializer = MonthlyPeriodSerializer(yearly_period, many=False)
+    monthly_period = MonthlyPeriod.objects.get(id=id)
+    serializer = MonthlyPeriodSerializer(monthly_period, many=False)
     return Response(serializer.data, status=200)
 
 

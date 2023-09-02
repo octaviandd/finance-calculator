@@ -38,7 +38,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
-        fields = ["id", "title", "symbol", "code", "rate"]
+        fields = ["id", "title", 'label', "symbol", "code", "rate"]
 
 
 class MonthlyPeriodSerializer(serializers.ModelSerializer):
@@ -52,6 +52,7 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
     expense_categories = serializers.SerializerMethodField()
     incomes = serializers.SerializerMethodField()
     expenses = serializers.SerializerMethodField()
+    start_balance = serializers.SerializerMethodField()
     
 
     class Meta:
@@ -102,6 +103,9 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
         for expense_category in expenses_categories:
             expenses.extend(list(expense_category.expenses_set.all()))
         return ExpenseSerializer(expenses, many=True).data
+    
+    def get_start_balance(self, obj):
+        return self._convert_to_currency(obj.start_balance)
 
     def get_monthly_total_planned_incomes_amount(self, obj):
         return self._convert_to_currency(obj.monthly_total_planned_incomes_amount())

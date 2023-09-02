@@ -121,7 +121,6 @@ export default function ReportTable({
                             ? row.planned_amount.toString()
                             : "0"
                         }
-                        currency={currency}
                         slotProps={{
                           input: {
                             precision: 2,

@@ -5,16 +5,17 @@ import { Currency } from "./types/Currency";
 
 export const Store = createContext<{
   currency: Currency;
-  setCurrency: Function;
+  setGlobalCurrency: Function;
 }>({
   currency: {
     id: "1",
-    title: "pound",
+    title: "Sterling Pound",
+    label: "pound",
     symbol: "£",
     rate: 1,
     code: "GBP",
   },
-  setCurrency: () => undefined,
+  setGlobalCurrency: () => undefined,
 });
 
 export default function StoreProvider({ children }: { children: ReactNode }) {
@@ -22,18 +23,24 @@ export default function StoreProvider({ children }: { children: ReactNode }) {
     ? JSON.parse(localStorage.getItem("currency") as string)
     : {
         id: "1",
-        title: "pound",
+        title: "Sterling Pound",
+        label: "pound",
         symbol: "£",
         rate: 1,
         currency: "GBP",
       };
   const [currency, setCurrency] = useState(initialCurrency);
 
+  const setGlobalCurrency = (currency: Currency) => {
+    localStorage.setItem("currency", JSON.stringify(currency));
+    setCurrency(currency);
+  };
+
   return (
     <Store.Provider
       value={{
         currency,
-        setCurrency,
+        setGlobalCurrency,
       }}
     >
       {children}
