@@ -1,7 +1,7 @@
 /** @format */
 
 import axios, { AxiosError } from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link as RLink, useNavigate } from "react-router-dom";
 import { CssVarsProvider } from "@mui/joy/styles";
 import GlobalStyles from "@mui/joy/GlobalStyles";
@@ -61,13 +61,24 @@ export default function LoginPage() {
       "post",
       "finance/login",
       formJson,
-      (data: { token: string }) => {
-        document.cookie = `token=${data.token}; path=/`;
-        navigate("/profile");
-      },
+      () => navigate("/"),
       () => setError(true)
     );
   };
+
+  const checkUserIsLogged = () => {
+    serverRequest(
+      "get",
+      "finance/user",
+      undefined,
+      (user: any) => user && navigate("/")
+    );
+  };
+
+  useEffect(() => {
+    checkUserIsLogged();
+  }, []);
+
   return (
     <CssVarsProvider
       defaultMode="dark"
@@ -189,8 +200,8 @@ export default function LoginPage() {
                 </FormControl>
               )}
               <FormControl required>
-                <FormLabel>Email</FormLabel>
-                <Input type="email" name="email" autoComplete="email" />
+                <FormLabel>Username</FormLabel>
+                <Input type="text" name="username" autoComplete="username" />
               </FormControl>
               <FormControl required>
                 <FormLabel>Password</FormLabel>

@@ -1,9 +1,22 @@
 /** @format */
 import axios, { AxiosError } from "axios";
 import { Order } from "../types/Order";
-import { getCookie } from "./cookie";
+import { Headers } from "../types/Headers";
 
-const token = getCookie("token");
+export function getCookie(name: string) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    let cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
 
 export const openSidebar = () => {
   if (typeof document !== "undefined") {
@@ -91,29 +104,37 @@ export function formatDate(date: Date) {
   return formattedDate;
 }
 
+const csrfToken = getCookie("csrftoken");
+
 export const serverRequest = async (
   method: string,
   url: string,
   data: any | undefined,
   callback: Function,
-  setErrors: Function
+  setErrors?: Function
 ) => {
   try {
+    let headers: Headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (method === "post" && csrfToken) {
+      headers["X-CSRFToken"] = csrfToken;
+    }
+
     await axios({
       method,
-      url: `http://127.0.0.1:8000/${url}`,
+      url: `http://localhost:8000/${url}`,
       data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
+      withCredentials: true,
+      headers,
     }).then((response) => {
       callback(response.data);
     });
   } catch (error) {
     const err = error as AxiosError;
     if (axios.isAxiosError(err)) {
-      setErrors(err);
+      setErrors && setErrors(err);
     }
   }
 };

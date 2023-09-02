@@ -30,7 +30,6 @@ export default function NumberInput({
   const [value, setValue] = useState("0");
   const handleChange = (value: string) => {
     setValue(value);
-    console.log(onChange);
     onChange && onChange(value);
   };
 

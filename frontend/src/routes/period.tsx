@@ -40,7 +40,6 @@ export default function Period() {
       `finance/monthly-period/${periodId}`,
       undefined,
       (data: MonthlyPeriod) => {
-        console.log(data);
         setPeriod(data);
       },
       setError

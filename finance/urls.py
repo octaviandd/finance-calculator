@@ -5,14 +5,17 @@ from .views import (
     monthly_periods,
     yearly_periods,
     auth,
-    external,
+    currency,
     income,
     expense,
 )
 
 urlpatterns = [
-    path("register", auth.register, name="register"),
-    path("login", auth.login, name="login"),
+    path("register", auth.custom_register, name="register"),
+    path("login", auth.custom_login, name="login"),
+    path("logout", auth.logout, name="logout"),
+    path("csrf", auth.get_csrf_token, name="csrf"),
+    path("user", auth.get_user, name="user"),
     path("yearly-periods", yearly_periods.get_yearly_periods, name="yearly_periods"),
     path(
         "yearly-period-create",
@@ -67,8 +70,13 @@ urlpatterns = [
         name="delete-category",
     ),
     path(
-        "currency-exchange",
-        external.get_currency_exchange,
-        name="get_currency_exchange",
+        "set-currency",
+        currency.set_currency,
+        name="get_currencies",
+    ),
+    path(
+        "get-currencies",
+        currency.get_currencies,
+        name="set_currency",
     ),
 ]

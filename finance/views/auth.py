@@ -5,14 +5,16 @@ from rest_framework.decorators import (
 )
 from rest_framework.response import Response
 from django.dispatch import receiver
-from django.contrib.auth import get_user_model
-from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate, login
 from ..serializers import UserSerializer
 from django.db.models.signals import post_save
 from ..models import Profile, YearlyPeriod, MonthlyPeriod, User
 from rest_framework.permissions import AllowAny
 import calendar
-import datetime
+from datetime import datetime, date
+from django.middleware.csrf import get_token
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 # AUTH ROUTES #
 
@@ -20,17 +22,19 @@ import datetime
 @api_view(["POST"])
 @authentication_classes([])
 @permission_classes([AllowAny])
-def register(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = User.objects.create_user(
-            username=serializer.validated_data["username"],
-            email=serializer.validated_data["email"],
-            password=serializer.validated_data["password"],
-        )
-        return Response(UserSerializer(user).data, status=201)
-    else:
-        return Response(serializer.errors, status=400)
+def custom_register(request):
+    username = request.data.get("username")
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    if User.objects.filter(username=username).exists():
+        return Response({"message": "Username already taken."}, status=400)
+    if User.objects.filter(email=email).exists():
+        return Response({"message": "Email already taken."}, status=400)
+
+    User.objects.create_user(username, email, password)
+
+    return Response({"message": "User registered successfully."}, status=201)
 
 
 @receiver(post_save, sender=User)
@@ -43,8 +47,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 
         for index, month in enumerate(calendar.month_name[1:], 1):
             _, last_day = calendar.monthrange(datetime.now().year, index)
-            from_date = datetime(datetime.now().year, index, 1).date()
-            to_date = datetime(datetime.now().year, index, last_day).date()
+            from_date = date(datetime.now().year, index, 1)
+            to_date = date(datetime.now().year, index, last_day)
             monthly_period = MonthlyPeriod.objects.create(
                 title=month, from_date=from_date, to_date=to_date
             )
@@ -74,22 +78,39 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def login(request):
-    email = request.data.get("email")
+def custom_login(request):
+    print(request.build_absolute_uri())
+    username = request.data.get("username")
     password = request.data.get("password")
 
-    User = get_user_model()
+    user = authenticate(request, username=username, password=password)
 
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        return Response({"error": "Invalid credentials"}, status=400)
+    if user is not None:
+        login(request, user)
+        return Response({"status": "logged in"}, status=200)
 
-    if not user.check_password(password):
-        return Response({"error": "Invalid credentials"}, status=400)
+    return Response({"error": "Invalid credentials"}, status=400)
 
-    token, _ = Token.objects.get_or_create(user=user)
-    return Response({"token": token.key}, status=200)
 
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def logout(request):
+    logout(request)
+    return Response({"status": "logged out"}, status=200)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def get_csrf_token(request):
+    token = get_token(request)
+    return Response({"csrfToken": token})
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_user(request):
+    if(request.user.is_authenticated):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, 200)
+
+    return Response({"message": 'User is not authenticated'}, 401)
 
 # AUTH ROUTES #

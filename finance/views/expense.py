@@ -7,13 +7,13 @@ from rest_framework.decorators import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 from ..serializers import CategorySerializer, ExpenseSerializer
 from ..models import Expense, Category
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def get_incomes(request):
     categories = Category.objects.all()
@@ -22,7 +22,7 @@ def get_incomes(request):
 
 
 @api_view(["POST"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def create_expense(request, id):
     category_id = request.data.get("category")
@@ -45,7 +45,7 @@ def create_expense(request, id):
 
 
 @api_view(["DELETE"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_expense(request, id):
     expenseId = request.data

@@ -5,7 +5,7 @@ from rest_framework.decorators import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from ..serializers import CategorySerializer
@@ -13,7 +13,7 @@ from ..models import Category, MonthlyPeriod
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def get_categories(request):
     categories = Category.objects.all()
@@ -22,7 +22,7 @@ def get_categories(request):
 
 
 @api_view(["POST"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def create_category(request, id):
     category_title = request.data["category"]["title"]
@@ -50,7 +50,7 @@ def create_category(request, id):
 
 
 @api_view(["DELETE"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_category(request, id):
     categoryId = request.data["categoryId"]
@@ -68,7 +68,7 @@ def delete_category(request, id):
 
 
 @api_view(["POST"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def update_category_planned_amount(request, id):
     planned_amount = request.data.get("amount")

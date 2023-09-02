@@ -1,6 +1,7 @@
 from django.db import models
 from .category import Category
 
+
 class MonthlyPeriod(models.Model):
     title = models.CharField(max_length=30)
     from_date = models.DateField(null=True)

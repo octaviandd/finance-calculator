@@ -1,8 +1,9 @@
 /** @format */
 
 export type Currency = {
+  id: string;
   title: string;
   symbol: string;
   rate: number;
-  currency: string;
+  code: string;
 };

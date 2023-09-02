@@ -1,11 +1,7 @@
-from rest_framework.decorators import (
-    api_view,
-    authentication_classes,
-    permission_classes,
-)
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
 from ..serializers import YearlyPeriodSerializer
 from ..models import Profile, YearlyPeriod, MonthlyPeriod
 from django.db import IntegrityError
@@ -16,26 +12,20 @@ import datetime
 
 
 @api_view(["GET"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def get_yearly_periods(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
     yearly_periods = profile.periods.all()
-    serializer = YearlyPeriodSerializer(yearly_periods, many=True)
-    return Response(serializer.data, status=200)
-
-
-@api_view(["GET"])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def get_yearly_period(request, id):
-    yearly_period = YearlyPeriod.objects.get(id=id)
-    serializer = YearlyPeriodSerializer(yearly_period, many=False)
+    currency = request.session.get("currency")
+    serializer = YearlyPeriodSerializer(
+        yearly_periods, context={"currency": currency}, many=True
+    )
     return Response(serializer.data, status=200)
 
 
 @api_view(["POST"])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def create_yearly_period(request):
     payload = json.loads(request.body.decode("utf-8"))

@@ -9,9 +9,10 @@ import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
 import Periods from "../components/layout/Periods";
 import { Button, TabPanel } from "@mui/joy";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { serverRequest } from "../utils/utils";
 import { Period } from "../types/Period";
+import { Store } from "../Store";
 
 export default function MyProfile() {
   const [periods, setPeriods] = useState<Period[]>([]);

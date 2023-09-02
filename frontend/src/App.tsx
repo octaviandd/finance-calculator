@@ -7,10 +7,28 @@ import Box from "@mui/joy/Box";
 import customTheme from "./theme";
 import Sidebar from "./components/layout/Sidebar";
 import Header from "./components/layout/Header";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import StoreProvider from "./Store";
+import { useEffect } from "react";
+import { serverRequest } from "./utils/utils";
 
 export default function App() {
+  const navigate = useNavigate();
+
+  const checkUserIsLogged = () => {
+    serverRequest(
+      "get",
+      "finance/user",
+      undefined,
+      (user: any) => console.log("Logged"),
+      (error: any) => navigate("/login")
+    );
+  };
+
+  useEffect(() => {
+    checkUserIsLogged();
+  }, []);
+
   return (
     <StoreProvider>
       <CssVarsProvider disableTransitionOnChange theme={customTheme}>

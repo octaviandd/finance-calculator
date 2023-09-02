@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
-from django.forms import ValidationError
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from .models import YearlyPeriod, MonthlyPeriod, Expense, Income, Category
+from .models import YearlyPeriod, MonthlyPeriod, Expense, Income, Category, Currency
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,29 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username", "email", "password"]
         extra_kwargs = {"password": {"write_only": True}}
-
-    def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise ValidationError("A user with that email already exists.")
-        return value
-
-    def validate_password(self, value):
-        try:
-            validate_password(value)
-        except ValidationError as exc:
-            raise serializers.ValidationError(str(exc))
-        return value
-
-    def create(self, validated_data):
-        user = User(
-            username=validated_data["username"],
-            email=validated_data["email"],
-        )
-
-        user.set_password(validated_data["password"])
-        user.save()
-
-        return user
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -43,24 +18,27 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "title", "planned_amount", "category_type", "actual_amount"]
 
-    def actual_amount(self):
-        return self.expenses_set
+    def actual_amount(self, obj):
+        currency = self.context.get("currency", None)
+        return round(obj.actual_amount() * currency['rate'], 2)
 
 
 class IncomeSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False, read_only=True)
-
     class Meta:
         model = Income
         fields = ["id", "title", "amount", "category", "date"]
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False, read_only=True)
-
     class Meta:
         model = Expense
         fields = ["id", "title", "amount", "category", "date"]
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Currency
+        fields = ["id", "title", "symbol", "code", "rate"]
 
 
 class MonthlyPeriodSerializer(serializers.ModelSerializer):
@@ -74,6 +52,7 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
     expense_categories = serializers.SerializerMethodField()
     incomes = serializers.SerializerMethodField()
     expenses = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = MonthlyPeriod
@@ -95,6 +74,12 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
             "monthly_saved_this_month",
             "monthly_end_balance",
         ]
+
+    def _convert_to_currency(self, amount):
+        currency = self.context.get("currency", None)
+        if(currency is None):
+            return round(amount, 2)
+        return round(amount * currency['rate'], 2)
 
     def get_income_categories(self, obj):
         incomes_categories = obj.categories.filter(category_type="income")
@@ -119,22 +104,22 @@ class MonthlyPeriodSerializer(serializers.ModelSerializer):
         return ExpenseSerializer(expenses, many=True).data
 
     def get_monthly_total_planned_incomes_amount(self, obj):
-        return obj.monthly_total_planned_incomes_amount()
+        return self._convert_to_currency(obj.monthly_total_planned_incomes_amount())
 
     def get_monthly_total_planned_expenses_amount(self, obj):
-        return obj.monthly_total_planned_expenses_amount()
+        return self._convert_to_currency(obj.monthly_total_planned_expenses_amount())
 
     def get_monthly_total_actual_incomes_amount(self, obj):
-        return obj.monthly_total_actual_incomes_amount()
+        return self._convert_to_currency(obj.monthly_total_actual_incomes_amount())
 
     def get_monthly_total_actual_expenses_amount(self, obj):
-        return obj.monthly_total_actual_expenses_amount()
+        return self._convert_to_currency(obj.monthly_total_actual_expenses_amount())
 
     def get_monthly_saved_this_month(self, obj):
-        return obj.monthly_saved_this_month()
+        return self._convert_to_currency(obj.monthly_saved_this_month())
 
     def get_monthly_end_balance(self, obj):
-        return obj.monthly_end_balance()
+        return self._convert_to_currency(obj.monthly_end_balance())
 
 
 class YearlyPeriodSerializer(serializers.ModelSerializer):
@@ -143,7 +128,8 @@ class YearlyPeriodSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = YearlyPeriod
-        fields = ["id", "title", "monthly_periods", 'total_saved']
-    
+        fields = ["id", "title", "monthly_periods", "total_saved"]
+
     def get_total_saved(self, obj):
-        return obj.total_saved()
+        currency = self.context.get("currency", None)
+        return round(obj.total_saved() * currency['rate'], 2)

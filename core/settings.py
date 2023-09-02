@@ -28,8 +28,20 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 CSRF_COOKIE_SECURE = False
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SECURE = False
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
-CSRF_COOKIE_NAME = "csrftoken"
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition
@@ -59,10 +71,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "core.urls"
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
 
 TEMPLATES = [
     {
@@ -128,7 +136,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-SESSION_SAVE_EVERY_REQUEST = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -140,9 +148,13 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }

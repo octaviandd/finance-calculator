@@ -29,7 +29,7 @@ export default function ReportDisplay({ period, totalSaved }: Props) {
             <p className="text-xl text-[#334960]">START BALANCE</p>
             <p className="text-right text-[#334960] italic">
               {currency.symbol}
-              {(period.start_balance * currency.rate).toFixed(2)}
+              {period.start_balance.toFixed(2)}
             </p>
           </div>
         </div>
