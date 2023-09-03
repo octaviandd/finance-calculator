@@ -118,7 +118,10 @@ export const serverRequest = async (
       "Content-Type": "application/json",
     };
 
-    if (method === "post" && csrfToken) {
+    if (
+      (method === "post" || method === "delete" || method === "put") &&
+      csrfToken
+    ) {
       headers["X-CSRFToken"] = csrfToken;
     }
 

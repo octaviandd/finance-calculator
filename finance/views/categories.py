@@ -34,7 +34,7 @@ def create_category(request, id):
 
     monthly_period = MonthlyPeriod.objects.get(id=id)
 
-    if Category.objects.filter(title=category_title).exists():
+    if monthly_period.categories.filter(title=category_title).exists():
         return Response({"error": "The item already exists"}, 400)
 
     try:
@@ -47,7 +47,7 @@ def create_category(request, id):
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
 
-    categories = Category.objects.all()
+    categories = monthly_period.categories.all()
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data, status=200)
 

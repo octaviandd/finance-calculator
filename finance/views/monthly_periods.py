@@ -29,7 +29,7 @@ def get_monthly_period(request, id):
 @permission_classes([IsAuthenticated])
 def update_monthly_starting_balance(request, id):
     currency = request.session.get("currency")
-    start_balance = request.data.get("amount")
+    start_balance = round(request.data.get("amount") / currency['rate'], 2)
     monthly_period = MonthlyPeriod.objects.get(pk=id)
 
     try:
