@@ -79,7 +79,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def custom_login(request):
-    print(request.build_absolute_uri())
     username = request.data.get("username")
     password = request.data.get("password")
 
@@ -98,19 +97,22 @@ def logout(request):
     logout(request)
     return Response({"status": "logged out"}, status=200)
 
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def get_csrf_token(request):
     token = get_token(request)
     return Response({"csrfToken": token})
 
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_user(request):
-    if(request.user.is_authenticated):
+    if request.user.is_authenticated:
         serializer = UserSerializer(request.user)
         return Response(serializer.data, 200)
 
-    return Response({"message": 'User is not authenticated'}, 401)
+    return Response({"message": "User is not authenticated"}, 401)
+
 
 # AUTH ROUTES #

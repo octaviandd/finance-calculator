@@ -17,7 +17,10 @@ from ..models import Expense, Category
 @permission_classes([IsAuthenticated])
 def get_incomes(request):
     categories = Category.objects.all()
-    serializer = CategorySerializer(categories, many=True)
+    currency = request.session.get("currency")
+    serializer = CategorySerializer(
+        categories, context={"currency": currency}, many=True
+    )
     return Response(serializer.data, status=200)
 
 
@@ -30,7 +33,6 @@ def create_expense(request, id):
     amount = request.data.get("amount")
     date = request.data.get("date")
 
-    print(request.data)
     category = Category.objects.get(pk=category_id)
 
     try:

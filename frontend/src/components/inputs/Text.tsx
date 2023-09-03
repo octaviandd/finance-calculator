@@ -20,6 +20,7 @@ export default function TextInput({ input, onChange }: Props) {
       setValue(input);
     }
   }, [input]);
+
   return (
     <Input
       id="title"

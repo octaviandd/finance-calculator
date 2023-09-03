@@ -1,4 +1,8 @@
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -31,6 +35,7 @@ def create_yearly_period(request):
     payload = json.loads(request.body.decode("utf-8"))
     previous_year = payload.get("previousYear", None)
     user = request.user
+    currency = request.session.get("currency")
 
     profile, _ = Profile.objects.get_or_create(user=user)
     year = int(previous_year) + 1
@@ -49,5 +54,5 @@ def create_yearly_period(request):
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
 
-    serializer = YearlyPeriodSerializer(yearly_period)
+    serializer = YearlyPeriodSerializer(yearly_period, context={"currency", currency})
     return Response(serializer.data, status=200)

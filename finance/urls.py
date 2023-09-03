@@ -29,7 +29,7 @@ urlpatterns = [
     ),
     path(
         "monthly-period/<int:id>/edit",
-        monthly_periods.edit_monthly_period,
+        monthly_periods.get_monthly_period,
         name="monthly_period_edit",
     ),
     path(

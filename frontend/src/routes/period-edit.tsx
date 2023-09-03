@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Box, Button, Sheet, Typography } from "@mui/joy";
 import Table from "../components/tables/Table";
@@ -9,11 +9,13 @@ import { Income } from "../types/Income";
 import { serverRequest } from "../utils/utils";
 import { ArrowLeft } from "react-feather";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
+import { Store } from "../Store";
 
 export default function PeriodEdit() {
   const [error, setError] = useState(false);
   const { periodId } = useParams();
   const [period, setPeriod] = useState<MonthlyPeriod>();
+  const { currency } = useContext(Store);
   const navigate = useNavigate();
 
   const getMonthlyPeriod = async () => {
@@ -21,7 +23,10 @@ export default function PeriodEdit() {
       "get",
       `finance/monthly-period/${periodId}`,
       undefined,
-      (data: MonthlyPeriod) => setPeriod(data),
+      (data: MonthlyPeriod) => {
+        console.log(data);
+        setPeriod(data);
+      },
       setError
     );
   };
@@ -83,7 +88,7 @@ export default function PeriodEdit() {
 
   useEffect(() => {
     getMonthlyPeriod();
-  }, []);
+  }, [currency]);
 
   return (
     <Sheet

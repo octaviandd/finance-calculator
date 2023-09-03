@@ -34,7 +34,6 @@ export default function NumberInput({
   };
 
   useEffect(() => {
-    console.log(currency);
     if (amount) {
       setValue(amount);
     }

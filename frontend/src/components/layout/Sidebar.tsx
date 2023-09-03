@@ -15,7 +15,7 @@ import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import ColorSchemeToggle from "../../utils/ColorSchemeToggle";
 import { closeSidebar } from "../../utils/utils";
-import { LogOut, Coffee, Home, BarChart2, Filter } from "react-feather";
+import { LogOut, Coffee, Home, BarChart2, Filter, User } from "react-feather";
 import { Link } from "react-router-dom";
 import Modal from "../Modal";
 import { Store } from "../../Store";
@@ -208,7 +208,9 @@ export default function Sidebar() {
       </Box>
       <Divider />
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <Avatar variant="outlined" src="/static/images/avatar/3.jpg" />
+        <Avatar variant="outlined">
+          <User />
+        </Avatar>
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography fontSize="sm" fontWeight="lg">
             Octavian D.
@@ -216,7 +218,7 @@ export default function Sidebar() {
           <Typography level="body-sm">octaviandd@yahoo.com</Typography>
         </Box>
         <IconButton variant="plain" color="neutral">
-          <i data-feather="log-out" />
+          <LogOut />
         </IconButton>
       </Box>
     </Sheet>

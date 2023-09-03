@@ -17,7 +17,10 @@ from ..models import Category, MonthlyPeriod
 @permission_classes([IsAuthenticated])
 def get_categories(request):
     categories = Category.objects.all()
-    serializer = CategorySerializer(categories, many=True)
+    currency = request.session.get("currency")
+    serializer = CategorySerializer(
+        categories, context={"currency": currency}, many=True
+    )
     return Response(serializer.data, status=200)
 
 

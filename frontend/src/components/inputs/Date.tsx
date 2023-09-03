@@ -13,16 +13,12 @@ type Props = {
 export default function DateInput({ row }: Props) {
   return (
     <>
-      {row.status === "new" ? (
-        <Input type="date" id="date" name="date" required />
-      ) : (
-        <Input
-          type="date"
-          id="date"
-          name="date"
-          value={dayjs(row.date).format("YYYY-MM-DD")}
-        />
-      )}
+      <Input
+        type="date"
+        id="date"
+        name="date"
+        value={row.date ? dayjs(row.date).format("YYYY-MM-DD") : ""}
+      />
     </>
   );
 }

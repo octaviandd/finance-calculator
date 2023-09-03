@@ -8,7 +8,6 @@ load_dotenv(".env")
 
 class CurrencyConvertor:
     def set_exchange_rate(self, request, currency_id):
-        print(request.session.session_key)
         self.update_currencies()
         currency = Currency.objects.get(id=currency_id)
         request.session["currency"] = {

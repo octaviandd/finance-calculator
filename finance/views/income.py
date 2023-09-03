@@ -17,7 +17,10 @@ from ..models import Category, Income
 @permission_classes([IsAuthenticated])
 def get_incomes(request):
     categories = Category.objects.all()
-    serializer = CategorySerializer(categories, many=True)
+    currency = request.session.get("currency")
+    serializer = CategorySerializer(
+        categories, context={"currency": currency}, many=True
+    )
     return Response(serializer.data, status=200)
 
 
