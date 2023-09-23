@@ -9,10 +9,9 @@ import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
 import Periods from "../components/layout/Periods";
 import { Button, TabPanel } from "@mui/joy";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { serverRequest } from "../utils/utils";
 import { Period } from "../types/Period";
-import { Store } from "../Store";
 
 export default function MyProfile() {
   const [periods, setPeriods] = useState<Period[]>([]);
@@ -20,7 +19,7 @@ export default function MyProfile() {
 
   useEffect(() => {
     serverRequest(
-      "GET",
+      "get",
       `finance/yearly-periods`,
       undefined,
       (data: Period[]) => {
@@ -31,17 +30,15 @@ export default function MyProfile() {
   }, []);
 
   const addNewPeriod = () => {
-    if (periods) {
-      serverRequest(
-        "POST",
-        `finance/yearly-period-create`,
-        { previousYear: periods[periods.length - 1].title },
-        (data: Period) => {
-          setPeriods((prevState) => [...prevState, data]);
-        },
-        setErrors
-      );
-    }
+    serverRequest(
+      "post",
+      `finance/yearly-period-create`,
+      { previousYear: periods[periods.length - 1].title },
+      (data: Period) => {
+        setPeriods((prevState) => [...prevState, data]);
+      },
+      setErrors
+    );
   };
 
   return (
@@ -58,7 +55,7 @@ export default function MyProfile() {
         <Typography level="h1" fontSize="xl2" sx={{ mb: 1 }}>
           Periods
         </Typography>
-        <Button onClick={addNewPeriod}>Add a new period</Button>
+        <Button onClick={() => addNewPeriod()}>Add a new period</Button>
       </Box>
       <Tabs
         defaultValue={1}

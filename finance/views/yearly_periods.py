@@ -10,9 +10,8 @@ from ..serializers import YearlyPeriodSerializer
 from ..models import Profile, YearlyPeriod, MonthlyPeriod
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
-import json
 import calendar
-import datetime
+from datetime import datetime
 
 
 @api_view(["GET"])
@@ -32,10 +31,10 @@ def get_yearly_periods(request):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def create_yearly_period(request):
-    payload = json.loads(request.body.decode("utf-8"))
+    currency = request.session.get("currency")
+    payload = request.data
     previous_year = payload.get("previousYear", None)
     user = request.user
-    currency = request.session.get("currency")
 
     profile, _ = Profile.objects.get_or_create(user=user)
     year = int(previous_year) + 1
@@ -54,5 +53,5 @@ def create_yearly_period(request):
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
 
-    serializer = YearlyPeriodSerializer(yearly_period, context={"currency", currency})
+    serializer = YearlyPeriodSerializer(yearly_period, context={"currency": currency}, many = False)
     return Response(serializer.data, status=200)
