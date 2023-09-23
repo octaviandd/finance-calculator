@@ -30,8 +30,9 @@ def get_incomes(request):
 def create_expense(request, id):
     category_id = request.data.get("category")
     title = request.data.get("title")
-    amount = request.data.get("amount")
+    amount = float(request.data.get("amount")) or 0
     date = request.data.get("date")
+    currency = request.session.get("currency")
 
     category = Category.objects.get(pk=category_id)
 
@@ -42,7 +43,7 @@ def create_expense(request, id):
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
 
-    serializer = ExpenseSerializer(expense)
+    serializer = ExpenseSerializer(expense, context={"currency": currency}, many = False)
     return Response(serializer.data, status=200)
 
 
@@ -58,5 +59,5 @@ def delete_expense(request, id):
     except Expense.DoesNotExist as e:
         return Response({"error": "Expense does not exist"}, status=404)
 
-    serializer = ExpenseSerializer(expense)
+    serializer = ExpenseSerializer(expense, many = False)
     return Response(serializer.data, status=200)

@@ -14,16 +14,28 @@ import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
 import ColorSchemeToggle from "../../utils/ColorSchemeToggle";
-import { closeSidebar } from "../../utils/utils";
+import { closeSidebar, serverRequest } from "../../utils/utils";
 import { LogOut, Coffee, Home, BarChart2, Filter, User } from "react-feather";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Modal from "../Modal";
 import { Store } from "../../Store";
 
 export default function Sidebar() {
+  const [error, setError] = useState();
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const { currency } = useContext(Store);
+  const navigate = useNavigate();
+
+  const logout = () => {
+    serverRequest(
+      "post",
+      `finance/logout`,
+      null,
+      (data: string) => navigate("/"),
+      setError
+    );
+  };
 
   return (
     <Sheet
@@ -196,14 +208,6 @@ export default function Sidebar() {
               <ListItemContent>Buy me a Coffee</ListItemContent>
             </ListItemButton>
           </ListItem>
-          <ListItem>
-            <ListItemButton>
-              <ListItemDecorator>
-                <LogOut />
-              </ListItemDecorator>
-              <ListItemContent>Log Out</ListItemContent>
-            </ListItemButton>
-          </ListItem>
         </List>
       </Box>
       <Divider />
@@ -215,9 +219,8 @@ export default function Sidebar() {
           <Typography fontSize="sm" fontWeight="lg">
             Octavian D.
           </Typography>
-          <Typography level="body-sm">octaviandd@yahoo.com</Typography>
         </Box>
-        <IconButton variant="plain" color="neutral">
+        <IconButton variant="plain" color="neutral" onClick={() => logout()}>
           <LogOut />
         </IconButton>
       </Box>

@@ -26,6 +26,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    console.log("hit");
     checkUserIsLogged();
   }, []);
 

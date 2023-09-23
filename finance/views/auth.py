@@ -5,7 +5,7 @@ from rest_framework.decorators import (
 )
 from rest_framework.response import Response
 from django.dispatch import receiver
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from ..serializers import UserSerializer
 from django.db.models.signals import post_save
 from ..models import Profile, YearlyPeriod, MonthlyPeriod, User
@@ -93,6 +93,16 @@ def custom_login(request):
     username = request.data.get("username")
     password = request.data.get("password")
 
+    currency = Currency.objects.get(id=1)   
+    request.session["currency"] = {
+        "id": currency.id,
+        "title": currency.title,
+        "label": currency.label,
+        "symbol": currency.symbol,
+        "rate": currency.rate,
+        "code": currency.code,
+    }
+
     user = authenticate(request, username=username, password=password)
 
     if user is not None:
@@ -104,7 +114,7 @@ def custom_login(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def logout(request):
+def custom_logout(request):
     logout(request)
     return Response({"status": "logged out"}, status=200)
 
@@ -119,7 +129,6 @@ def get_csrf_token(request):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_user(request):
-    print(request.user.is_authenticated)
     if request.user.is_authenticated:
         serializer = UserSerializer(request.user)
         return Response(serializer.data, 200)

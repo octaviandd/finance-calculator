@@ -13,7 +13,7 @@ from .views import (
 urlpatterns = [
     path("register", auth.custom_register, name="register"),
     path("login", auth.custom_login, name="login"),
-    path("logout", auth.logout, name="logout"),
+    path("logout", auth.custom_logout, name="logout"),
     path("csrf", auth.get_csrf_token, name="csrf"),
     path("user", auth.get_user, name="user"),
     path("yearly-periods", yearly_periods.get_yearly_periods, name="yearly_periods"),

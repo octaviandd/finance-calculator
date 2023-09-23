@@ -30,19 +30,20 @@ def get_incomes(request):
 def create_income(request, id):
     category_id = request.data.get("category")
     title = request.data.get("title")
-    amount = request.data.get("amount")
+    amount = float(request.data.get("amount")) or 0
     date = request.data.get("date")
+    currency = request.session.get("currency")
 
     category = Category.objects.get(pk=category_id)
 
     try:
-        expense = Income.objects.create(
+        income = Income.objects.create(
             title=title, amount=amount, date=date, category=category
         )
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
 
-    serializer = IncomeSerializer(expense)
+    serializer = IncomeSerializer(income, context={"currency": currency}, many = False)
     return Response(serializer.data, 200)
 
 
@@ -50,13 +51,13 @@ def create_income(request, id):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_income(request, id):
-    expenseId = request.data
+    incomeId = request.data
 
     try:
-        expense = Income.objects.get(id=expenseId)
-        expense.delete()
+        income = Income.objects.get(id=incomeId)
+        income.delete()
     except Income.DoesNotExist as e:
         return Response({"error": "Income does not exist"}, status=404)
 
-    serializer = IncomeSerializer(expense)
+    serializer = IncomeSerializer(income, many = False)
     return Response(serializer.data, status=200)

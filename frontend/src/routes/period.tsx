@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -10,7 +11,7 @@ import {
   Sheet,
   Typography,
 } from "@mui/joy";
-import { Plus } from "react-feather";
+import { Bell, Plus } from "react-feather";
 import CategoryTable from "../components/tables/CategoryTable";
 import { MonthlyPeriod } from "../types/MonthlyPeriod";
 import { serverRequest, debounce } from "../utils/utils";
@@ -20,6 +21,7 @@ import AmountSelector from "../components/inputs/Number";
 import ReportDisplay from "../components/layout/ReportDisplay";
 
 export default function Period() {
+  const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState(false);
   const { periodId } = useParams();
   const { state } = useLocation();
@@ -56,7 +58,12 @@ export default function Period() {
       "post",
       `finance/monthly-period/${periodId}/update-starting-balance`,
       { amount: parseFloat(value) },
-      (data: string) => console.log(data),
+      (data: string) => {
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 3000);
+      },
       setError
     );
   }, 500);
@@ -172,14 +179,27 @@ export default function Period() {
                   name="amount"
                   required={true}
                 />
-                <Button
-                  variant="plain"
-                  sx={{ margin: 0, marginLeft: "6px" }}
-                  type="submit"
-                >
-                  End balance from previous month
-                </Button>
               </Box>
+            )}
+            {showAlert && (
+              <Alert
+                sx={{ marginTop: 1 }}
+                variant="soft"
+                color="success"
+                startDecorator={<Bell />}
+                endDecorator={
+                  <Button
+                    size="sm"
+                    variant="solid"
+                    color="success"
+                    onClick={() => setShowAlert(false)}
+                  >
+                    Close
+                  </Button>
+                }
+              >
+                Your start balance was updated successfully.
+              </Alert>
             )}
           </FormControl>
         </Box>
