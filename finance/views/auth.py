@@ -15,6 +15,7 @@ from datetime import datetime, date
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from ..models.currency import Currency
 
 # AUTH ROUTES #
 
@@ -31,6 +32,16 @@ def custom_register(request):
         return Response({"message": "Username already taken."}, status=400)
     if User.objects.filter(email=email).exists():
         return Response({"message": "Email already taken."}, status=400)
+    
+    currency = Currency.objects.get(id=1)
+    request.session["currency"] = {
+        "id": currency.id,
+        "title": currency.title,
+        "label": currency.label,
+        "symbol": currency.symbol,
+        "rate": currency.rate,
+        "code": currency.code,
+    }
 
     User.objects.create_user(username, email, password)
 
@@ -108,6 +119,7 @@ def get_csrf_token(request):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_user(request):
+    print(request.user.is_authenticated)
     if request.user.is_authenticated:
         serializer = UserSerializer(request.user)
         return Response(serializer.data, 200)

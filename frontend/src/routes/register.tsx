@@ -89,7 +89,7 @@ export default function RegisterPage() {
       "post",
       "finance/register",
       formJson,
-      () => navigate("/login"),
+      () => navigate("/"),
       (data: AxiosError) => handleErrors(data)
     );
   };

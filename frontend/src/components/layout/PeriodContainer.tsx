@@ -20,6 +20,7 @@ export default function BasicCard({
   totalSaved: number;
 }) {
   const { currency } = useContext(Store);
+  console.log(currency);
   return (
     <Card variant="outlined" sx={{ width: 370 }}>
       <div>

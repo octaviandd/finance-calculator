@@ -54,6 +54,10 @@ export default function ReportTable({
     setBlock(false);
   };
 
+  useEffect(() => {
+    console.log(items);
+  }, [items]);
+
   return (
     <Box>
       <Sheet

@@ -22,6 +22,8 @@ def get_yearly_periods(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
     yearly_periods = profile.periods.all()
     currency = request.session.get("currency")
+    print(request.session)
+    print(currency)
     serializer = YearlyPeriodSerializer(
         yearly_periods, context={"currency": currency}, many=True
     )

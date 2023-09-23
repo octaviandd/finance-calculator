@@ -28,9 +28,10 @@ def get_categories(request):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def create_category(request, id):
+    currency = request.session.get("currency")
     category_title = request.data["category"]["title"]
     category_type = request.data["categoryType"]
-    planned_amount = request.data["category"]["amount"] or 0
+    planned_amount = float(request.data["category"]["amount"]) or 0
 
     monthly_period = MonthlyPeriod.objects.get(id=id)
 
@@ -47,8 +48,7 @@ def create_category(request, id):
     except (IntegrityError, ValidationError, AttributeError) as e:
         raise e
 
-    categories = monthly_period.categories.all()
-    serializer = CategorySerializer(categories, many=True)
+    serializer = CategorySerializer(category, context={"currency": currency}, many=False)
     return Response(serializer.data, status=200)
 
 

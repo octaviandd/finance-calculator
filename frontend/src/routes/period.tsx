@@ -99,7 +99,10 @@ export default function Period() {
         (data: Category) => {
           setPeriod(
             (prevState) =>
-              prevState && { ...prevState, [key]: [...prevState[key], data] }
+              prevState && {
+                ...prevState,
+                [key]: [...prevState[key].slice(0, -1), data],
+              }
           );
         },
         setError

@@ -41,11 +41,17 @@ export default function ErrorPage({}: Props) {
           alignItems: "center",
         }}
       >
-        <Typography sx={{ display: "block" }}>Oops!</Typography>
-        <Typography>Sorry, an unexpected error has occurred.</Typography>
-        <Typography>
-          <i>{errorMessage}</i>
-        </Typography>
+        <Box
+          sx={{ marginTop: "auto", marginBottom: "auto", textAlign: "center" }}
+        >
+          <Typography sx={{ display: "block" }} level="h2">
+            Oops!
+          </Typography>
+          <Typography>Sorry, an unexpected error has occurred.</Typography>
+          <Typography>
+            <i>{errorMessage}</i>
+          </Typography>
+        </Box>
       </Box>
     </Sheet>
   );

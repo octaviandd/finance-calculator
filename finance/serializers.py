@@ -26,6 +26,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["id", "title", "planned_amount", "category_type", "actual_amount"]
 
     def get_planned_amount(self, obj):
+        print(type(obj.planned_amount))
         return convert_to_currency(self, obj.planned_amount)
 
     def get_actual_amount(self, obj):
@@ -51,7 +52,6 @@ class ExpenseSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "amount", "category", "date"]
 
     def get_amount(self, obj):
-        print(convert_to_currency(self, obj.amount))
         return convert_to_currency(self, obj.amount)
 
 
