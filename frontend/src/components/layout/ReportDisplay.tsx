@@ -1,7 +1,7 @@
 /** @format */
 
-import React, { useContext } from "react";
-import { Stack } from "@mui/joy";
+import React, { useContext, useEffect, useState } from "react";
+import { Box, Stack } from "@mui/joy";
 import { MonthlyPeriod } from "../../types/MonthlyPeriod";
 import { Store } from "../../Store";
 
@@ -12,6 +12,21 @@ type Props = {
 
 export default function ReportDisplay({ period, totalSaved }: Props) {
   const { currency } = useContext(Store);
+  const [startBalancePercentage, setStartBalancePercentage] =
+    useState<number>(0);
+  const [endBalancePercentage, setEndBalancePercentage] = useState<number>(0);
+
+  useEffect(() => {
+    if (period.start_balance > period.monthly_end_balance) {
+      let difference = period.start_balance - period.monthly_end_balance;
+      let percentage = (difference / period.monthly_end_balance) * 100;
+      setStartBalancePercentage(parseFloat(percentage.toFixed(2)));
+    } else if (period.start_balance < period.monthly_end_balance) {
+      let difference = period.monthly_end_balance - period.start_balance;
+      let percentage = (difference / period.monthly_end_balance) * 100;
+      setEndBalancePercentage(parseFloat(percentage.toFixed(2)));
+    }
+  }, []);
 
   return (
     <Stack
@@ -19,31 +34,45 @@ export default function ReportDisplay({ period, totalSaved }: Props) {
       justifyContent="center"
       alignItems="center"
       spacing={12}
-      marginBottom="8rem"
-      marginTop="8rem"
+      marginBottom="4"
+      marginTop="4"
     >
-      <div className="max-w-[400px] gap-x-4 flex items-center">
-        <div>
-          <div className="bg-[#334960] max-h-[400px] h-[200px] w-[70px] ml-auto"></div>
-          <div className="font-medium">
-            <p className="text-xl text-[#334960]">START BALANCE</p>
-            <p className="text-right text-[#334960] italic">
-              {currency.symbol}
-              {period.start_balance.toFixed(2)}
-            </p>
-          </div>
+      <Box
+        sx={{
+          maxHeight: "400px",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gridTemplateRows: "1fr 1fr",
+          gap: "6px",
+        }}
+      >
+        <div className="h-[300px] flex items-end justify-end">
+          <Box
+            className="bg-[#334960] h-[200px] w-[70px]"
+            sx={{ height: `calc(66.67% - ${endBalancePercentage}%)` }}
+          ></Box>
         </div>
-        <div>
-          <div className="bg-[#F46524] max-h-[400px] h-[200px] w-[70px] mr-auto"></div>
-          <div className="font-medium">
-            <p className="text-xl text-[#F46524]">END BALANCE</p>
-            <p className="italic text-[#F46524]">
-              {currency.symbol}
-              {(period.monthly_end_balance * currency.rate).toFixed(2)}
-            </p>
-          </div>
+        <div className="h-[300px] flex items-end">
+          <Box
+            className="bg-[#F46524] w-[70px]"
+            sx={{ height: `calc(66.67% - ${startBalancePercentage}%)` }}
+          ></Box>
         </div>
-      </div>
+        <div className="font-medium">
+          <p className="text-xl text-[#334960]">START BALANCE</p>
+          <p className="text-right text-[#334960] italic">
+            {currency.symbol}
+            {period.start_balance.toFixed(2)}
+          </p>
+        </div>
+        <div className="font-medium">
+          <p className="text-xl text-[#F46524]">END BALANCE</p>
+          <p className="italic text-[#F46524]">
+            {currency.symbol}
+            {(period.monthly_end_balance * currency.rate).toFixed(2)}
+          </p>
+        </div>
+      </Box>
       <div className="py-10 px-20 bg-[#ECEDEF]">
         <div className="border-b border-dashed border-neutral-400 pb-5">
           <p className="text-3xl text-center">

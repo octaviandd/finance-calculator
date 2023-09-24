@@ -200,14 +200,6 @@ export default function Sidebar() {
               </ListItemContent>
             </ListItemButton>
           </ListItem>
-          <ListItem>
-            <ListItemButton>
-              <ListItemDecorator>
-                <Coffee />
-              </ListItemDecorator>
-              <ListItemContent>Buy me a Coffee</ListItemContent>
-            </ListItemButton>
-          </ListItem>
         </List>
       </Box>
       <Divider />
