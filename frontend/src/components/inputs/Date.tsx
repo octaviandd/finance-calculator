@@ -7,17 +7,17 @@ import { Input } from "@mui/joy";
 import dayjs from "dayjs";
 
 type Props = {
-  row: Expense | Income;
+  item: Expense | Income;
 };
 
-export default function DateInput({ row }: Props) {
+export default function DateInput({ item }: Props) {
   return (
     <>
       <Input
         type="date"
         id="date"
         name="date"
-        value={row.date ? dayjs(row.date).format("YYYY-MM-DD") : ""}
+        value={item.date ? dayjs(item.date).format("YYYY-MM-DD") : ""}
       />
     </>
   );

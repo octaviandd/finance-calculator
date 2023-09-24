@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Button from "@mui/joy/Button";
 import Link from "@mui/joy/Link";
 import Table from "@mui/joy/Table";
@@ -17,7 +17,7 @@ import DateSelector from "../inputs/Date";
 import TextSelector from "../inputs/Text";
 import { v4 as uuidv4 } from "uuid";
 
-export default function OrderTable({
+export default function TransactionsTable({
   createRow,
   items,
   categories,
@@ -49,6 +49,10 @@ export default function OrderTable({
     }
   };
 
+  useEffect(() => {
+    console.log({ items });
+  }, []);
+
   const onSubmit = (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
     const formData = new FormData(form.currentTarget);
@@ -61,7 +65,6 @@ export default function OrderTable({
   return (
     <>
       <Sheet
-        className="OrderTableContainer"
         variant="outlined"
         sx={{
           width: "100%",
@@ -112,17 +115,17 @@ export default function OrderTable({
               </tr>
             </thead>
             <tbody>
-              {items.map((row) => (
+              {items.map((item) => (
                 <tr key={uuidv4()}>
                   <td>
-                    <TextSelector input={row.title || ""} />
+                    <TextSelector input={item.title} />
                   </td>
                   <td>
-                    <DateSelector row={row} />
+                    <DateSelector item={item} />
                   </td>
                   <td>
                     <AmountSelector
-                      amount={row.amount ? row.amount.toString() : "0"}
+                      amount={item.amount ? item.amount.toString() : "0"}
                       variant="plain"
                       id="amount"
                       name="amount"
@@ -132,11 +135,11 @@ export default function OrderTable({
                   <td>
                     <CategorySelector
                       categories={categories}
-                      categoryId={row?.category?.id}
+                      categoryId={item?.category}
                     />
                   </td>
                   <td>
-                    {row.status === "new" ? (
+                    {item.status === "new" ? (
                       <Button variant="plain" sx={{ margin: 0 }} type="submit">
                         Save
                       </Button>
@@ -145,7 +148,7 @@ export default function OrderTable({
                         <Button
                           variant="plain"
                           color="danger"
-                          onClick={() => removeItem(row.id)}
+                          onClick={() => removeItem(item.id)}
                         >
                           Delete
                         </Button>

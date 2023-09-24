@@ -6,7 +6,7 @@ import { Category } from "../../types/Category";
 
 type Props = {
   categories: Category[];
-  categoryId: string;
+  categoryId: string | number;
 };
 
 export default function SelectInput({ categories, categoryId }: Props) {
@@ -18,6 +18,11 @@ export default function SelectInput({ categories, categoryId }: Props) {
   };
 
   useEffect(() => {
+    console.log(
+      { categoryId },
+      { categories },
+      categories.find((category) => category.id === categoryId)?.id
+    );
     if (categoryId) {
       setCurrentCategory(
         categories.find((category) => category.id === categoryId)?.id

@@ -8,5 +8,5 @@ export type Expense = {
   date: Date;
   status: "new" | "created";
   amount: number;
-  category: Category;
+  category: number | string;
 };
